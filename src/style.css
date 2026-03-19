@@ -1,0 +1,295 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+}
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-box {
+  width: 400px;
+  padding: 40px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 24px;
+  color: #333;
+}
+
+.login-type-switch {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.admin-layout {
+  display: flex;
+  height: 100vh;
+}
+
+.admin-sidebar {
+  width: 220px;
+  background: #304156;
+  color: white;
+}
+
+.admin-header {
+  height: 60px;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.admin-main {
+  flex: 1;
+  background: #f0f2f5;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.employee-layout {
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+.employee-header {
+  background: white;
+  padding: 15px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.employee-content {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.exam-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.exam-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.exam-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.exam-card-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.exam-card-info {
+  display: flex;
+  gap: 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+.question-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.question-title {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.question-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.question-option {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #e0e0e0;
+}
+
+.question-option:hover {
+  background: #f0f7ff;
+  border-color: #409eff;
+}
+
+.question-option.selected {
+  background: #ecf5ff;
+  border-color: #409eff;
+}
+
+.question-option.correct {
+  background: #f0f9eb;
+  border-color: #67c23a;
+}
+
+.question-option.wrong {
+  background: #fef0f0;
+  border-color: #f56c6c;
+}
+
+.exam-timer {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.timer-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #409eff;
+}
+
+.result-score {
+  text-align: center;
+  padding: 40px;
+}
+
+.score-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px;
+  color: white;
+}
+
+.score-circle.pass {
+  background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+}
+
+.score-circle.fail {
+  background: linear-gradient(135deg, #f56c6c 0%, #f78989 100%);
+}
+
+.score-number {
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.score-text {
+  font-size: 16px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 32px;
+  font-weight: bold;
+  color: #409eff;
+  margin-bottom: 10px;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 14px;
+}
+
+.chart-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.qrcode-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.qrcode-image {
+  margin: 20px auto;
+}
+
+.ai-generate-dialog {
+  padding: 20px;
+}
+
+.ai-prompt-input {
+  margin-bottom: 20px;
+}
+
+.ai-generated-questions {
+  max-height: 400px;
+  overflow-y: auto;
+}

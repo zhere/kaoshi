@@ -1,0 +1,88 @@
+<template>
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div style="padding: 20px; text-align: center; border-bottom: 1px solid #3a4a5d;">
+        <h3 style="color: white; margin: 0;">管理端</h3>
+      </div>
+      <el-menu :default-active="activeMenu" background-color="#304156" text-color="#bfcbd9" active-text-color="#409EFF" router>
+        <el-menu-item index="/admin/user">
+          <el-icon><User /></el-icon>
+          <span>用户管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/question">
+          <el-icon><Document /></el-icon>
+          <span>题目管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/template">
+          <el-icon><Files /></el-icon>
+          <span>考试模板管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/exam">
+          <el-icon><EditPen /></el-icon>
+          <span>考试管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/statistics">
+          <el-icon><DataAnalysis /></el-icon>
+          <span>统计分析</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/export">
+          <el-icon><Download /></el-icon>
+          <span>数据导出</span>
+        </el-menu-item>
+      </el-menu>
+    </div>
+    <div style="flex: 1; display: flex; flex-direction: column;">
+      <div class="admin-header">
+        <div>
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item :to="{ path: '/admin/user' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>{{ currentPageTitle }}</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <span>欢迎，{{ userStore.user?.name }}</span>
+          <el-button type="danger" size="small" @click="handleLogout">退出登录</el-button>
+        </div>
+      </div>
+      <div class="admin-main">
+        <router-view />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useUserStore } from '@/stores/user'
+
+const router = useRouter()
+const route = useRoute()
+const userStore = useUserStore()
+
+const activeMenu = computed(() => route.path)
+
+const pageTitles = {
+  '/admin/user': '用户管理',
+  '/admin/question': '题目管理',
+  '/admin/template': '考试模板管理',
+  '/admin/exam': '考试管理',
+  '/admin/statistics': '统计分析',
+  '/admin/export': '数据导出'
+}
+
+const currentPageTitle = computed(() => pageTitles[route.path] || '')
+
+const handleLogout = () => {
+  ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    userStore.logout()
+    router.push('/login')
+    ElMessage.success('已退出登录')
+  }).catch(() => {})
+}
+</script>
