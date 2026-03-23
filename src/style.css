@@ -293,3 +293,155 @@ html, body, #app {
   max-height: 400px;
   overflow-y: auto;
 }
+
+/* 移动端响应式样式 */
+@media (max-width: 768px) {
+  .page-card {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .page-title {
+    font-size: 16px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+  }
+  
+  .el-table {
+    font-size: 13px;
+  }
+  
+  .el-table th {
+    padding: 8px 0;
+  }
+  
+  .el-table td {
+    padding: 8px 0;
+  }
+  
+  .el-dialog {
+    width: 90% !important;
+    margin-top: 5vh !important;
+  }
+  
+  .el-form-item__label {
+    float: none;
+    display: block;
+    text-align: left;
+    margin-bottom: 8px;
+  }
+  
+  .el-form-item__content {
+    margin-left: 0 !important;
+  }
+  
+  .el-button {
+    padding: 8px 15px;
+  }
+  
+  .el-button--large {
+    padding: 10px 20px;
+  }
+  
+  .el-input__inner {
+    font-size: 16px;
+  }
+  
+  .el-select {
+    width: 100%;
+  }
+  
+  .el-date-editor {
+    width: 100%;
+  }
+  
+  .el-row {
+    margin-left: -10px !important;
+    margin-right: -10px !important;
+  }
+  
+  .el-col {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+  
+  .stat-card {
+    padding: 15px;
+  }
+  
+  .stat-number {
+    font-size: 24px;
+  }
+  
+  .stat-label {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-card {
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .page-title {
+    font-size: 15px;
+  }
+  
+  .el-table {
+    font-size: 12px;
+  }
+  
+  .el-button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .el-button--large {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  
+  .stat-card {
+    padding: 12px;
+  }
+  
+  .stat-number {
+    font-size: 20px;
+  }
+  
+  .el-descriptions__label {
+    width: 80px !important;
+  }
+  
+  .el-tabs__item {
+    font-size: 13px;
+    padding: 0 10px;
+  }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+  .el-button:active {
+    transform: scale(0.98);
+  }
+  
+  .exam-card:active {
+    transform: scale(0.99);
+  }
+  
+  .question-option:active {
+    background: #f0f7ff;
+  }
+}
+
+/* 安全区域适配（刘海屏等） */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .employee-header {
+    padding-top: calc(15px + env(safe-area-inset-top));
+  }
+  
+  .mobile-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

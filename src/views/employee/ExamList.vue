@@ -2,16 +2,16 @@
   <div>
     <div class="page-card">
       <div class="page-title">可参与的考试</div>
-      <div style="margin-bottom: 20px; display: flex; gap: 10px;">
-        <el-select v-model="filterStatus" placeholder="考试状态" clearable style="width: 120px;">
+      <div class="filter-bar">
+        <el-select v-model="filterStatus" placeholder="考试状态" clearable class="filter-select">
           <el-option label="进行中" value="ongoing" />
           <el-option label="未开始" value="upcoming" />
         </el-select>
-        <el-input v-model="searchKeyword" placeholder="搜索考试名称" clearable style="width: 200px;">
+        <el-input v-model="searchKeyword" placeholder="搜索考试名称" clearable class="filter-input">
           <template #prefix><el-icon><Search /></el-icon></template>
         </el-input>
       </div>
-      <div v-if="filteredExams.length === 0" style="text-align: center; padding: 40px; color: #999;">
+      <div v-if="filteredExams.length === 0" class="empty-tip">
         暂无可参与的考试
       </div>
       <div v-else>
@@ -23,16 +23,16 @@
             </el-tag>
           </div>
           <div class="exam-card-info">
-            <span><el-icon><Clock /></el-icon> 时长：{{ exam.duration }}分钟</span>
-            <span><el-icon><Document /></el-icon> 题目：{{ exam.questionCount }}道</span>
-            <span><el-icon><Star /></el-icon> 总分：{{ exam.totalScore }}分</span>
-            <span><el-icon><CircleCheck /></el-icon> 及格：{{ exam.passScore }}分</span>
+            <span><el-icon><Clock /></el-icon> {{ exam.duration }}分钟</span>
+            <span><el-icon><Document /></el-icon> {{ exam.questionCount }}题</span>
+            <span><el-icon><Star /></el-icon> {{ exam.totalScore }}分</span>
+            <span><el-icon><CircleCheck /></el-icon> 及格{{ exam.passScore }}分</span>
           </div>
-          <div style="margin-top: 10px; color: #666; font-size: 13px;">
+          <div class="exam-card-time">
             <span>开始：{{ exam.startTime }}</span>
-            <span style="margin-left: 20px;">结束：{{ exam.endTime }}</span>
+            <span>结束：{{ exam.endTime }}</span>
           </div>
-          <div style="margin-top: 15px; text-align: right;">
+          <div class="exam-card-action">
             <el-button v-if="exam.status === 'ongoing'" type="primary" @click.stop="startExam(exam)">开始答题</el-button>
             <el-button v-else type="info" disabled>未开始</el-button>
           </div>
@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    <el-dialog v-model="detailDialogVisible" title="考试详情" width="500px">
+    <el-dialog v-model="detailDialogVisible" title="考试详情" width="500px" class="exam-detail-dialog">
       <el-descriptions :column="1" border>
         <el-descriptions-item label="考试名称">{{ currentExam.name }}</el-descriptions-item>
         <el-descriptions-item label="考试状态">
@@ -67,7 +67,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { exams as mockExams } from '@/data/mockData'
+import { exams as mockExams } from '../../data/mockData'
 
 const router = useRouter()
 const examList = ref([...mockExams.filter(e => e.status !== 'ended')])
@@ -99,3 +99,126 @@ const startExam = (exam) => {
   }).catch(() => {})
 }
 </script>
+
+<style scoped>
+.filter-bar {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  width: 120px;
+}
+
+.filter-input {
+  width: 200px;
+}
+
+.empty-tip {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.exam-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.exam-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.exam-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.exam-card-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.exam-card-info {
+  display: flex;
+  gap: 20px;
+  color: #666;
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+
+.exam-card-info span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.exam-card-time {
+  margin-top: 10px;
+  color: #666;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.exam-card-action {
+  margin-top: 15px;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-direction: column;
+  }
+  
+  .filter-select,
+  .filter-input {
+    width: 100%;
+  }
+  
+  .exam-card {
+    padding: 15px;
+  }
+  
+  .exam-card-title {
+    font-size: 15px;
+  }
+  
+  .exam-card-info {
+    gap: 10px;
+    font-size: 13px;
+  }
+  
+  .exam-card-time {
+    font-size: 12px;
+  }
+  
+  .exam-card-action {
+    margin-top: 12px;
+  }
+  
+  .exam-card-action .el-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .exam-card-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+</style>

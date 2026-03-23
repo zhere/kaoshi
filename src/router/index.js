@@ -49,6 +49,16 @@ const routes = [
         path: 'export',
         name: 'DataExport',
         component: () => import('@/views/admin/DataExport.vue')
+      },
+      {
+        path: 'material',
+        name: 'MaterialManagement',
+        component: () => import('@/views/admin/MaterialManagement.vue')
+      },
+      {
+        path: 'points',
+        name: 'PointsManagement',
+        component: () => import('@/views/admin/PointsManagement.vue')
       }
     ]
   },
@@ -80,6 +90,16 @@ const routes = [
         path: 'history',
         name: 'HistoryRecord',
         component: () => import('@/views/employee/HistoryRecord.vue')
+      },
+      {
+        path: 'material',
+        name: 'MaterialList',
+        component: () => import('@/views/employee/MaterialList.vue')
+      },
+      {
+        path: 'points',
+        name: 'MyPoints',
+        component: () => import('@/views/employee/MyPoints.vue')
       }
     ]
   }

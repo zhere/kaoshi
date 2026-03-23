@@ -123,3 +123,139 @@ const retryExam = () => {
   }).catch(() => {})
 }
 </script>
+
+<style scoped>
+.result-score {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.score-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px;
+  color: white;
+}
+
+.score-circle.pass {
+  background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+}
+
+.score-circle.fail {
+  background: linear-gradient(135deg, #f56c6c 0%, #f78989 100%);
+}
+
+.score-number {
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.score-text {
+  font-size: 16px;
+}
+
+.question-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.question-title {
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.question-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.question-option {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.question-option.correct {
+  background: #f0f9eb;
+  border-color: #67c23a;
+}
+
+.question-option.wrong {
+  background: #fef0f0;
+  border-color: #f56c6c;
+}
+
+@media (max-width: 768px) {
+  .result-score {
+    padding: 30px 15px;
+  }
+  
+  .score-circle {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .score-number {
+    font-size: 36px;
+  }
+  
+  .score-text {
+    font-size: 14px;
+  }
+  
+  .question-item {
+    padding: 15px;
+  }
+  
+  .question-title {
+    font-size: 14px;
+  }
+  
+  .question-option {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .result-score {
+    padding: 20px 10px;
+  }
+  
+  .score-circle {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .score-number {
+    font-size: 28px;
+  }
+  
+  h2 {
+    font-size: 18px !important;
+  }
+  
+  .result-score > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .result-score .el-button {
+    width: 100%;
+  }
+}
+</style>

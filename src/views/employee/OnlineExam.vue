@@ -72,8 +72,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { exams as mockExams, questions as mockQuestions } from '@/data/mockData'
-import { useExamStore } from '@/stores/exam'
+import { exams as mockExams, questions as mockQuestions } from '../../data/mockData'
+import { useExamStore } from '../../stores/exam'
 
 const router = useRouter()
 const route = useRoute()
@@ -230,3 +230,132 @@ onUnmounted(() => {
   }
 })
 </script>
+
+<style scoped>
+.exam-timer {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.timer-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #409EFF;
+}
+
+.question-nav {
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.question-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.question-title {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.question-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.question-option {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #e0e0e0;
+}
+
+.question-option:hover {
+  background: #f0f7ff;
+  border-color: #409eff;
+}
+
+.question-option.selected {
+  background: #ecf5ff;
+  border-color: #409eff;
+}
+
+.question-option.correct {
+  background: #f0f9eb;
+  border-color: #67c23a;
+}
+
+.question-option.wrong {
+  background: #fef0f0;
+  border-color: #f56c6c;
+}
+
+@media (max-width: 768px) {
+  .exam-timer {
+    top: 70px;
+    right: 10px;
+    padding: 10px 15px;
+  }
+  
+  .timer-text {
+    font-size: 20px;
+  }
+  
+  .question-nav {
+    padding: 8px;
+  }
+  
+  .question-nav .el-button {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+  
+  .question-item {
+    padding: 15px;
+  }
+  
+  .question-title {
+    font-size: 14px;
+  }
+  
+  .question-option {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .exam-timer {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-bottom: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .question-nav .el-button {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+}
+</style>

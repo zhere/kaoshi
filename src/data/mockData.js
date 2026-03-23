@@ -536,3 +536,123 @@ export const statistics = {
     { month: '2024-03', examCount: 1, userCount: 3, averageScore: 67 }
   ]
 }
+
+export const materials = [
+  {
+    id: 1,
+    title: '安全生产法解读',
+    description: '详细解读《安全生产法》的核心条款和实际应用',
+    type: 'pdf',
+    url: '/materials/safety_law.pdf',
+    category: 1,
+    fileSize: 2048,
+    duration: 30,
+    createTime: '2024-01-10 10:00:00',
+    creator: 'admin'
+  },
+  {
+    id: 2,
+    title: '电气安全操作规程',
+    description: '电气作业安全操作规范和注意事项',
+    type: 'pdf',
+    url: '/materials/electrical_safety.pdf',
+    category: 2,
+    fileSize: 1536,
+    duration: 25,
+    createTime: '2024-01-12 14:00:00',
+    creator: 'manager1'
+  },
+  {
+    id: 3,
+    title: '高处作业安全培训视频',
+    description: '高处作业安全知识和实操演示',
+    type: 'video',
+    url: '/materials/height_work.mp4',
+    category: 3,
+    fileSize: 51200,
+    duration: 45,
+    createTime: '2024-01-15 09:00:00',
+    creator: 'manager2'
+  },
+  {
+    id: 4,
+    title: '消防安全知识手册',
+    description: '消防安全基础知识和应急处理方法',
+    type: 'pdf',
+    url: '/materials/fire_safety.pdf',
+    category: 4,
+    fileSize: 1024,
+    duration: 20,
+    createTime: '2024-01-18 11:00:00',
+    creator: 'admin'
+  },
+  {
+    id: 5,
+    title: '触电急救演示视频',
+    description: '触电事故应急处置和急救方法演示',
+    type: 'video',
+    url: '/materials/first_aid.mp4',
+    category: 5,
+    fileSize: 30720,
+    duration: 30,
+    createTime: '2024-01-20 15:00:00',
+    creator: 'manager1'
+  },
+  {
+    id: 6,
+    title: '电力设备操作规范',
+    description: '电力设备安全操作流程和注意事项',
+    type: 'pdf',
+    url: '/materials/equipment_operation.pdf',
+    category: 6,
+    fileSize: 2560,
+    duration: 35,
+    createTime: '2024-01-22 10:00:00',
+    creator: 'admin'
+  }
+]
+
+export const templateMaterials = [
+  { templateId: 1, materialIds: [1, 4, 5], required: true },
+  { templateId: 2, materialIds: [2, 6], required: true },
+  { templateId: 3, materialIds: [3], required: false }
+]
+
+export const userMaterials = [
+  { userId: 4, materialId: 1, status: 'completed', progress: 100, completeTime: '2024-03-01 10:00:00' },
+  { userId: 4, materialId: 2, status: 'completed', progress: 100, completeTime: '2024-03-02 14:00:00' },
+  { userId: 4, materialId: 4, status: 'learning', progress: 60, completeTime: null },
+  { userId: 5, materialId: 1, status: 'completed', progress: 100, completeTime: '2024-03-03 09:00:00' },
+  { userId: 5, materialId: 4, status: 'completed', progress: 100, completeTime: '2024-03-04 11:00:00' },
+  { userId: 6, materialId: 1, status: 'learning', progress: 30, completeTime: null }
+]
+
+export const pointsRecords = [
+  { id: 1, userId: 4, type: 'study', action: '完成学习资料', points: 10, description: '完成学习资料《安全生产法解读》', createTime: '2024-03-01 10:00:00' },
+  { id: 2, userId: 4, type: 'study', action: '完成学习资料', points: 10, description: '完成学习资料《电气安全操作规程》', createTime: '2024-03-02 14:00:00' },
+  { id: 3, userId: 4, type: 'exam', action: '考试及格', points: 30, description: '2024年第一季度安全生产考试及格', createTime: '2024-03-05 14:30:00' },
+  { id: 4, userId: 5, type: 'study', action: '完成学习资料', points: 10, description: '完成学习资料《安全生产法解读》', createTime: '2024-03-03 09:00:00' },
+  { id: 5, userId: 5, type: 'study', action: '完成学习资料', points: 10, description: '完成学习资料《消防安全知识手册》', createTime: '2024-03-04 11:00:00' },
+  { id: 6, userId: 5, type: 'exam', action: '考试及格', points: 30, description: '2024年第一季度安全生产考试及格', createTime: '2024-03-06 10:15:00' },
+  { id: 7, userId: 6, type: 'exam', action: '考试参与', points: 10, description: '参与2024年第一季度安全生产考试', createTime: '2024-03-07 16:45:00' },
+  { id: 8, userId: 4, type: 'study', action: '完成全部关联资料', points: 20, description: '完成安全生产知识考试全部学习资料', createTime: '2024-03-02 14:30:00' }
+]
+
+export const pointsRules = {
+  completeMaterial: 10,
+  completeAllMaterials: 20,
+  examPass: 30,
+  examFail: 10,
+  examFullScore: 50,
+  continuous7Days: 50,
+  continuous30Days: 200
+}
+
+export const userPoints = [
+  { userId: 1, points: 0, totalPoints: 0, learningDays: 0, lastLearnDate: null },
+  { userId: 2, points: 0, totalPoints: 0, learningDays: 0, lastLearnDate: null },
+  { userId: 3, points: 0, totalPoints: 0, learningDays: 0, lastLearnDate: null },
+  { userId: 4, points: 70, totalPoints: 70, learningDays: 5, lastLearnDate: '2024-03-05' },
+  { userId: 5, points: 50, totalPoints: 50, learningDays: 3, lastLearnDate: '2024-03-06' },
+  { userId: 6, points: 10, totalPoints: 10, learningDays: 1, lastLearnDate: '2024-03-07' }
+]

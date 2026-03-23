@@ -13,6 +13,10 @@
           <el-icon><Document /></el-icon>
           <span>题目管理</span>
         </el-menu-item>
+        <el-menu-item index="/admin/material">
+          <el-icon><Reading /></el-icon>
+          <span>学习资料管理</span>
+        </el-menu-item>
         <el-menu-item index="/admin/template">
           <el-icon><Files /></el-icon>
           <span>考试模板管理</span>
@@ -20,6 +24,10 @@
         <el-menu-item index="/admin/exam">
           <el-icon><EditPen /></el-icon>
           <span>考试管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/points">
+          <el-icon><Star /></el-icon>
+          <span>积分管理</span>
         </el-menu-item>
         <el-menu-item index="/admin/statistics">
           <el-icon><DataAnalysis /></el-icon>
@@ -66,8 +74,10 @@ const activeMenu = computed(() => route.path)
 const pageTitles = {
   '/admin/user': '用户管理',
   '/admin/question': '题目管理',
+  '/admin/material': '学习资料管理',
   '/admin/template': '考试模板管理',
   '/admin/exam': '考试管理',
+  '/admin/points': '积分管理',
   '/admin/statistics': '统计分析',
   '/admin/export': '数据导出'
 }

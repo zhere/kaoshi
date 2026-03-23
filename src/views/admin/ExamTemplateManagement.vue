@@ -19,6 +19,16 @@
       <el-table-column prop="questionCount" label="题目数量" width="100" />
       <el-table-column prop="duration" label="考试时长(分钟)" width="120" />
       <el-table-column prop="passScore" label="及格分数" width="100" />
+      <el-table-column label="关联学习资料" min-width="200">
+        <template #default="{ row }">
+          <div v-if="getTemplateMaterials(row.id).length > 0">
+            <el-tag v-for="m in getTemplateMaterials(row.id)" :key="m.id" size="small" style="margin: 2px;">
+              {{ m.title }}
+            </el-tag>
+          </div>
+          <el-tag v-else type="info" size="small">未关联</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="difficulty" label="难度设置" width="100">
         <template #default="{ row }">
           <el-tag :type="row.difficulty === 'easy' ? 'success' : row.difficulty === 'medium' ? 'warning' : 'danger'" size="small">
@@ -70,6 +80,19 @@
       <el-form-item label="及格分数" prop="passScore">
         <el-input-number v-model="templateForm.passScore" :min="0" :max="100" />
         <span style="margin-left: 10px;">分</span>
+      </el-form-item>
+      <el-form-item label="关联学习资料" prop="materials">
+        <el-select v-model="templateForm.materials" multiple placeholder="请选择关联的学习资料" style="width: 100%">
+          <el-option v-for="m in materials" :key="m.id" :label="m.title" :value="m.id">
+            <span>{{ m.title }}</span>
+            <el-tag :type="m.type === 'pdf' ? 'danger' : m.type === 'video' ? 'warning' : 'info'" size="small" style="margin-left: 10px;">
+              {{ m.type === 'pdf' ? 'PDF' : m.type === 'video' ? '视频' : '文档' }}
+            </el-tag>
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="学习要求">
+        <el-switch v-model="templateForm.requiredLearning" active-text="必须完成学习才能参加考试" inactive-text="不强制要求" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -193,7 +216,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { examTemplates as mockTemplates, categories as mockCategories, exams as mockExams } from '@/data/mockData'
+import { examTemplates as mockTemplates, categories as mockCategories, exams as mockExams, materials as mockMaterials, templateMaterials } from '@/data/mockData'
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('创建考试模板')
@@ -201,6 +224,7 @@ const isEdit = ref(false)
 const templateFormRef = ref(null)
 const templateList = ref([...mockTemplates])
 const categories = computed(() => mockCategories)
+const materials = computed(() => mockMaterials)
 
 const examListDialogVisible = ref(false)
 const relatedExams = ref([])
@@ -221,6 +245,8 @@ const templateForm = reactive({
   questionCount: 20,
   passScore: 60,
   duration: 30,
+  materials: [],
+  requiredLearning: false,
   createTime: '',
   creator: 'admin'
 })
@@ -305,6 +331,17 @@ const handleDelete = (row) => {
 const handleViewExams = (row) => {
   relatedExams.value = mockExams.filter(e => e.templateId === row.id)
   examListDialogVisible.value = true
+}
+
+const getMaterialCount = (templateId) => {
+  const relation = templateMaterials.find(tm => tm.templateId === templateId)
+  return relation ? relation.materialIds.length : 0
+}
+
+const getTemplateMaterials = (templateId) => {
+  const relation = templateMaterials.find(tm => tm.templateId === templateId)
+  if (!relation) return []
+  return mockMaterials.filter(m => relation.materialIds.includes(m.id))
 }
 
 const handlePermission = (row) => {

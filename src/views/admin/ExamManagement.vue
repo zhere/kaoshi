@@ -43,6 +43,21 @@
 
   <el-dialog v-model="dialogVisible" :title="dialogTitle" width="700px">
     <el-form :model="examForm" :rules="rules" ref="examFormRef" label-width="120px">
+      <el-form-item label="选择考试模板" prop="templateId" v-if="!isEdit">
+        <el-select v-model="examForm.templateId" placeholder="请选择考试模板" style="width: 100%" @change="handleTemplateChange">
+          <el-option v-for="template in templateList" :key="template.id" :label="template.name" :value="template.id">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span>{{ template.name }}</span>
+              <el-tag size="small" style="margin-left: 10px;">{{ template.questionCount }}题 / {{ template.duration }}分钟</el-tag>
+            </div>
+          </el-option>
+        </el-select>
+        <div v-if="selectedTemplate" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+          <div style="margin-bottom: 5px;"><strong>模板描述：</strong>{{ selectedTemplate.description }}</div>
+          <div style="margin-bottom: 5px;"><strong>难度：</strong>{{ selectedTemplate.difficulty === 'easy' ? '简单' : selectedTemplate.difficulty === 'medium' ? '中等' : selectedTemplate.difficulty === 'hard' ? '困难' : '混合' }}</div>
+          <div><strong>关联资料：</strong>{{ getTemplateMaterialCount(selectedTemplate.id) }}个</div>
+        </div>
+      </el-form-item>
       <el-form-item label="考试名称" prop="name">
         <el-input v-model="examForm.name" placeholder="请输入考试名称" />
       </el-form-item>
@@ -58,22 +73,22 @@
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker v-model="examForm.endTime" type="datetime" placeholder="选择结束时间" style="width: 100%" />
       </el-form-item>
-      <el-form-item label="考试时长" prop="duration">
+      <el-form-item v-if="isEdit" label="考试时长" prop="duration">
         <el-input-number v-model="examForm.duration" :min="10" :max="180" />
         <span style="margin-left: 10px;">分钟</span>
       </el-form-item>
-      <el-form-item label="题目数量" prop="questionCount">
+      <el-form-item v-if="isEdit" label="题目数量" prop="questionCount">
         <el-input-number v-model="examForm.questionCount" :min="5" :max="100" />
       </el-form-item>
-      <el-form-item label="每题分值" prop="scorePerQuestion">
+      <el-form-item v-if="isEdit" label="每题分值" prop="scorePerQuestion">
         <el-input-number v-model="examForm.scorePerQuestion" :min="1" :max="10" />
         <span style="margin-left: 10px;">分</span>
       </el-form-item>
-      <el-form-item label="及格分数" prop="passScore">
+      <el-form-item v-if="isEdit" label="及格分数" prop="passScore">
         <el-input-number v-model="examForm.passScore" :min="0" :max="100" />
         <span style="margin-left: 10px;">分</span>
       </el-form-item>
-      <el-form-item label="选择题目" prop="questions">
+      <el-form-item v-if="isEdit" label="选择题目" prop="questions">
         <el-button type="primary" size="small" @click="showQuestionSelector">从题库选择</el-button>
         <div v-if="examForm.questions.length > 0" style="margin-top: 10px;">
           <el-tag v-for="qId in examForm.questions" :key="qId" style="margin: 2px;">题目{{ qId }}</el-tag>
@@ -198,7 +213,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { exams as mockExams, questions as mockQuestions, categories as mockCategories } from '@/data/mockData'
+import { exams as mockExams, questions as mockQuestions, categories as mockCategories, examTemplates, templateMaterials } from '@/data/mockData'
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('创建考试')
@@ -206,6 +221,7 @@ const isEdit = ref(false)
 const examFormRef = ref(null)
 const examList = ref([...mockExams])
 const categories = computed(() => mockCategories)
+const templateList = computed(() => examTemplates)
 
 const filterStatus = ref('')
 const searchKeyword = ref('')
@@ -222,6 +238,26 @@ const detailDialogVisible = ref(false)
 const currentExam = ref({})
 
 const qrcodeDialogVisible = ref(false)
+
+const selectedTemplate = computed(() => {
+  return examTemplates.find(t => t.id === examForm.templateId)
+})
+
+const getTemplateMaterialCount = (templateId) => {
+  const relation = templateMaterials.find(tm => tm.templateId === templateId)
+  return relation ? relation.materialIds.length : 0
+}
+
+const handleTemplateChange = (templateId) => {
+  const template = examTemplates.find(t => t.id === templateId)
+  if (template) {
+    examForm.name = template.name + ' - ' + new Date().toLocaleDateString('zh-CN')
+    examForm.duration = template.duration
+    examForm.questionCount = template.questionCount
+    examForm.passScore = template.passScore
+    examForm.totalScore = template.questionCount * 5
+  }
+}
 
 const examStats = reactive({
   totalParticipants: 15,
