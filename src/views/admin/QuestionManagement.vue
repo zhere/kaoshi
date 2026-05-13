@@ -169,28 +169,12 @@
       </div>
     </div>
   </el-dialog>
-
-  <el-dialog v-model="categoryDialogVisible" title="题目分类管理" width="500px">
-    <div style="margin-bottom: 15px;">
-      <el-input v-model="newCategoryName" placeholder="输入新分类名称" style="width: 200px; margin-right: 10px;" />
-      <el-button type="primary" @click="addCategory">添加分类</el-button>
-    </div>
-    <el-table :data="categories" border>
-      <el-table-column prop="name" label="分类名称" />
-      <el-table-column prop="description" label="描述" />
-      <el-table-column label="操作" width="150">
-        <template #default="{ row }">
-          <el-button type="primary" size="small" @click="editCategory(row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="deleteCategory(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-  </el-dialog>
 </template>
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { UploadFilled } from '@element-plus/icons-vue'
 import { questions as mockQuestions, categories as mockCategories } from '@/data/mockData'
 
 const dialogVisible = ref(false)
@@ -198,8 +182,7 @@ const dialogTitle = ref('添加题目')
 const isEdit = ref(false)
 const questionFormRef = ref(null)
 const questionList = ref([...mockQuestions])
-const categoryList = ref([...mockCategories])
-const categories = computed(() => categoryList.value)
+const categories = computed(() => mockCategories)
 
 const filterCategory = ref('')
 const filterType = ref('')
@@ -219,9 +202,6 @@ const aiForm = reactive({
   count: 5,
   prompt: ''
 })
-
-const categoryDialogVisible = ref(false)
-const newCategoryName = ref('')
 
 const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F']
 
@@ -256,7 +236,7 @@ const filteredQuestions = computed(() => {
 })
 
 const getCategoryName = (categoryId) => {
-  const cat = categoryList.value.find(c => c.id === categoryId)
+  const cat = categories.value.find(c => c.id === categoryId)
   return cat ? cat.name : ''
 }
 
@@ -369,7 +349,7 @@ const confirmImport = () => {
   importResult.value = {
     title: '导入成功',
     type: 'success',
-    description: `成功导入 15 道题目，其中 0 道题目格式有误被跳过`
+    description: '成功导入 15 道题目，其中 0 道题目格式有误被跳过'
   }
   setTimeout(() => {
     ElMessage.success('导入完成')
@@ -430,37 +410,5 @@ const saveGeneratedQuestions = () => {
   })
   ElMessage.success(`成功保存 ${aiGeneratedQuestions.value.length} 道题目`)
   aiDialogVisible.value = false
-}
-
-const addCategory = () => {
-  if (!newCategoryName.value) {
-    ElMessage.warning('请输入分类名称')
-    return
-  }
-  categoryList.value.push({
-    id: categoryList.value.length + 1,
-    name: newCategoryName.value,
-    description: ''
-  })
-  newCategoryName.value = ''
-  ElMessage.success('添加成功')
-}
-
-const editCategory = (row) => {
-  ElMessage.info('编辑分类：' + row.name)
-}
-
-const deleteCategory = (row) => {
-  ElMessageBox.confirm('确定要删除该分类吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    const index = categoryList.value.findIndex(c => c.id === row.id)
-    if (index !== -1) {
-      categoryList.value.splice(index, 1)
-    }
-    ElMessage.success('删除成功')
-  }).catch(() => {})
 }
 </script>

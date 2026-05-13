@@ -19,6 +19,9 @@
         <el-button type="info" link @click="router.push('/employee/history')">
           <el-icon><Clock /></el-icon><span class="btn-text">历史记录</span>
         </el-button>
+        <el-button type="primary" link @click="router.push('/employee/profile')">
+          <el-icon><User /></el-icon><span class="btn-text">个人中心</span>
+        </el-button>
         <el-button type="danger" size="small" @click="handleLogout">退出登录</el-button>
       </div>
     </div>
@@ -52,6 +55,7 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'

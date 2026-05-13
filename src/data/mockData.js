@@ -1,19 +1,19 @@
 export const users = [
-  { id: 1, username: 'admin', password: 'admin123', name: '系统管理员', role: 'super_admin', department: '信息部', phone: '13800138000', email: 'admin@power.com', status: 'active' },
-  { id: 2, username: 'manager1', password: '123456', name: '张三', role: 'admin', department: '安全部', phone: '13800138001', email: 'zhangsan@power.com', status: 'active' },
-  { id: 3, username: 'manager2', password: '123456', name: '李四', role: 'admin', department: '培训部', phone: '13800138002', email: 'lisi@power.com', status: 'active' },
-  { id: 4, username: 'emp001', password: '123456', name: '王五', role: 'employee', department: '运维部', phone: '13800138003', email: 'wangwu@power.com', status: 'active', employeeId: 'EMP001' },
-  { id: 5, username: 'emp002', password: '123456', name: '赵六', role: 'employee', department: '检修部', phone: '13800138004', email: 'zhaoliu@power.com', status: 'active', employeeId: 'EMP002' },
-  { id: 6, username: 'emp003', password: '123456', name: '钱七', role: 'employee', department: '运维部', phone: '13800138005', email: 'qianqi@power.com', status: 'active', employeeId: 'EMP003' },
+  { id: 1, username: 'admin', password: 'admin123', name: '系统管理员', role: 'super_admin', department: '信息部', phone: '13800138000', email: 'admin@power.com', status: 'active', createTime: '2024-01-01 09:00:00' },
+  { id: 2, username: 'manager1', password: '123456', name: '张三', role: 'admin', department: '安全部', phone: '13800138001', email: 'zhangsan@power.com', status: 'active', createTime: '2024-01-02 10:00:00' },
+  { id: 3, username: 'manager2', password: '123456', name: '李四', role: 'admin', department: '培训部', phone: '13800138002', email: 'lisi@power.com', status: 'active', createTime: '2024-01-03 11:00:00' },
+  { id: 4, username: 'emp001', password: '123456', name: '王五', role: 'employee', department: '运维部', phone: '13800138003', email: 'wangwu@power.com', status: 'active', employeeId: 'EMP001', createTime: '2024-02-01 09:00:00' },
+  { id: 5, username: 'emp002', password: '123456', name: '赵六', role: 'employee', department: '检修部', phone: '13800138004', email: 'zhaoliu@power.com', status: 'active', employeeId: 'EMP002', createTime: '2024-02-15 10:00:00' },
+  { id: 6, username: 'emp003', password: '123456', name: '钱七', role: 'employee', department: '运维部', phone: '13800138005', email: 'qianqi@power.com', status: 'active', employeeId: 'EMP003', createTime: '2024-03-01 14:00:00' },
 ]
 
 export const categories = [
-  { id: 1, name: '安全生产法规', description: '国家安全生产相关法律法规' },
-  { id: 2, name: '电气安全', description: '电气作业安全规范' },
-  { id: 3, name: '高处作业', description: '高处作业安全规范' },
-  { id: 4, name: '消防安全', description: '消防安全知识' },
-  { id: 5, name: '应急处置', description: '突发事件应急处置' },
-  { id: 6, name: '设备操作', description: '电力设备操作规范' },
+  { id: 1, name: '安全生产法规', description: '国家安全生产相关法律法规', parentId: null, sort: 1, status: 'active', createTime: '2024-01-01 10:00:00', updateTime: '2024-01-01 10:00:00' },
+  { id: 2, name: '电气安全', description: '电气作业安全规范', parentId: null, sort: 2, status: 'active', createTime: '2024-01-01 10:00:00', updateTime: '2024-01-01 10:00:00' },
+  { id: 3, name: '高处作业', description: '高处作业安全规范', parentId: null, sort: 3, status: 'active', createTime: '2024-01-01 10:00:00', updateTime: '2024-01-01 10:00:00' },
+  { id: 4, name: '消防安全', description: '消防安全知识', parentId: null, sort: 4, status: 'active', createTime: '2024-01-01 10:00:00', updateTime: '2024-01-01 10:00:00' },
+  { id: 5, name: '应急处置', description: '突发事件应急处置', parentId: null, sort: 5, status: 'active', createTime: '2024-01-01 10:00:00', updateTime: '2024-01-01 10:00:00' },
+  { id: 6, name: '设备操作', description: '电力设备操作规范', parentId: null, sort: 6, status: 'active', createTime: '2024-01-01 10:00:00', updateTime: '2024-01-01 10:00:00' },
 ]
 
 export const questions = [
@@ -393,6 +393,7 @@ export const exams = [
     id: 1,
     name: '2024年第一季度安全生产考试',
     templateId: 1,
+    category: 1,
     status: 'ongoing',
     startTime: '2024-03-01 09:00:00',
     endTime: '2024-03-31 18:00:00',
@@ -409,6 +410,7 @@ export const exams = [
     id: 2,
     name: '电气安全操作专项考试',
     templateId: 2,
+    category: 2,
     status: 'upcoming',
     startTime: '2024-04-01 09:00:00',
     endTime: '2024-04-15 18:00:00',
@@ -425,6 +427,7 @@ export const exams = [
     id: 3,
     name: '新员工入职安全培训考试',
     templateId: 1,
+    category: 3,
     status: 'ended',
     startTime: '2024-02-01 09:00:00',
     endTime: '2024-02-28 18:00:00',
@@ -656,3 +659,7 @@ export const userPoints = [
   { userId: 5, points: 50, totalPoints: 50, learningDays: 3, lastLearnDate: '2024-03-06' },
   { userId: 6, points: 10, totalPoints: 10, learningDays: 1, lastLearnDate: '2024-03-07' }
 ]
+
+export const systemConfig = {
+  posterBackground: '/images/poster-bg-default.png'
+}

@@ -1,59 +1,84 @@
 <template>
   <div class="page-card">
     <div class="page-title">学习资料管理</div>
-    <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-      <el-button type="primary" @click="handleAdd">
-        <el-icon><Plus /></el-icon>上传资料
-      </el-button>
-      <el-select v-model="filterType" placeholder="资料类型" clearable style="width: 120px;">
-        <el-option label="PDF" value="pdf" />
-        <el-option label="视频" value="video" />
-        <el-option label="图片" value="image" />
-        <el-option label="文档" value="doc" />
-      </el-select>
-      <el-select v-model="filterCategory" placeholder="资料分类" clearable style="width: 150px;">
-        <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id" />
-      </el-select>
-      <el-input v-model="searchKeyword" placeholder="搜索资料名称" clearable style="width: 200px;">
-        <template #prefix><el-icon><Search /></el-icon></template>
-      </el-input>
-    </div>
-    <el-table :data="filteredMaterials" border stripe>
-      <el-table-column type="index" label="序号" width="60" />
-      <el-table-column prop="title" label="资料名称" width="200" />
-      <el-table-column prop="type" label="类型" width="80">
-        <template #default="{ row }">
-          <el-tag :type="row.type === 'pdf' ? 'danger' : row.type === 'video' ? 'warning' : 'info'" size="small">
-            {{ row.type === 'pdf' ? 'PDF' : row.type === 'video' ? '视频' : row.type === 'image' ? '图片' : '文档' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="category" label="分类" width="120">
-        <template #default="{ row }">
-          {{ getCategoryName(row.category) }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="description" label="描述" show-overflow-tooltip />
-      <el-table-column prop="fileSize" label="文件大小" width="100">
-        <template #default="{ row }">
-          {{ formatFileSize(row.fileSize) }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="duration" label="学习时长" width="100">
-        <template #default="{ row }">
-          {{ row.duration }}分钟
-        </template>
-      </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="160" />
-      <el-table-column prop="creator" label="创建人" width="100" />
-      <el-table-column label="操作" width="200" fixed="right">
-        <template #default="{ row }">
-          <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-          <el-button type="success" size="small" @click="handlePreview(row)">预览</el-button>
-          <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-tabs v-model="activeTab">
+      <el-tab-pane label="资料管理" name="materials">
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+          <el-button type="primary" @click="handleAdd">
+            <el-icon><Plus /></el-icon>上传资料
+          </el-button>
+          <el-select v-model="filterType" placeholder="资料类型" clearable style="width: 120px;">
+            <el-option label="PDF" value="pdf" />
+            <el-option label="视频" value="video" />
+            <el-option label="图片" value="image" />
+            <el-option label="文档" value="doc" />
+          </el-select>
+          <el-select v-model="filterCategory" placeholder="资料分类" clearable style="width: 150px;">
+            <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id" />
+          </el-select>
+          <el-input v-model="searchKeyword" placeholder="搜索资料名称" clearable style="width: 200px;">
+            <template #prefix><el-icon><Search /></el-icon></template>
+          </el-input>
+        </div>
+        <el-table :data="filteredMaterials" border stripe>
+          <el-table-column type="index" label="序号" width="60" />
+          <el-table-column prop="title" label="资料名称" width="200" />
+          <el-table-column prop="type" label="类型" width="80">
+            <template #default="{ row }">
+              <el-tag :type="row.type === 'pdf' ? 'danger' : row.type === 'video' ? 'warning' : 'info'" size="small">
+                {{ row.type === 'pdf' ? 'PDF' : row.type === 'video' ? '视频' : row.type === 'image' ? '图片' : '文档' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="category" label="分类" width="120">
+            <template #default="{ row }">
+              {{ getCategoryName(row.category) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="description" label="描述" show-overflow-tooltip />
+          <el-table-column prop="fileSize" label="文件大小" width="100">
+            <template #default="{ row }">
+              {{ formatFileSize(row.fileSize) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="duration" label="学习时长" width="100">
+            <template #default="{ row }">
+              {{ row.duration }}分钟
+            </template>
+          </el-table-column>
+          <el-table-column prop="createTime" label="创建时间" width="160" />
+          <el-table-column prop="creator" label="创建人" width="100" />
+          <el-table-column label="操作" width="200" fixed="right">
+            <template #default="{ row }">
+              <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
+              <el-button type="warning" size="small" @click="handlePreview(row)">预览</el-button>
+              <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+      
+      <el-tab-pane label="分类管理" name="categories">
+        <div style="margin-bottom: 20px;">
+          <el-button type="primary" @click="handleAddCategory">
+            <el-icon><Plus /></el-icon>添加分类
+          </el-button>
+        </div>
+        <el-table :data="categoryList" border stripe>
+          <el-table-column type="index" label="序号" width="60" />
+          <el-table-column prop="name" label="分类名称" />
+          <el-table-column prop="description" label="描述" />
+          <el-table-column prop="materialCount" label="资料数量" width="100" />
+          <el-table-column prop="createTime" label="创建时间" width="160" />
+          <el-table-column label="操作" width="200">
+            <template #default="{ row }">
+              <el-button type="primary" size="small" @click="handleEditCategory(row)">编辑</el-button>
+              <el-button type="danger" size="small" @click="handleDeleteCategory(row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 
   <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px">
@@ -127,6 +152,36 @@
       </div>
     </div>
   </el-dialog>
+
+  <el-dialog v-model="categoryDialogVisible" :title="isEditCategory ? '编辑分类' : '添加分类'" width="500px">
+    <el-form :model="categoryForm" :rules="categoryRules" ref="categoryFormRef" label-width="100px">
+      <el-form-item label="分类名称" prop="name">
+        <el-input v-model="categoryForm.name" placeholder="请输入分类名称" />
+      </el-form-item>
+      <el-form-item label="描述">
+        <el-input v-model="categoryForm.description" type="textarea" :rows="3" placeholder="请输入分类描述" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="categoryDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="saveCategory">确定</el-button>
+    </template>
+  </el-dialog>
+
+  <el-dialog v-model="linkExamDialogVisible" title="关联考试" width="500px">
+    <div v-if="currentMaterial">
+      <p style="margin-bottom: 15px;"><strong>当前资料：</strong>{{ currentMaterial.title }}</p>
+      <el-select v-model="selectedExams" multiple placeholder="请选择要关联的考试" style="width: 100%">
+        <el-option label="安全生产知识考试" value="1" />
+        <el-option label="设备操作规程考试" value="2" />
+        <el-option label="应急处理能力测试" value="3" />
+      </el-select>
+    </div>
+    <template #footer>
+      <el-button @click="linkExamDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="saveLinkExams">确定</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
@@ -134,6 +189,7 @@ import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { materials as mockMaterials, categories as mockCategories } from '@/data/mockData'
 
+const activeTab = ref('materials')
 const dialogVisible = ref(false)
 const dialogTitle = ref('上传资料')
 const isEdit = ref(false)
@@ -148,6 +204,25 @@ const searchKeyword = ref('')
 
 const previewDialogVisible = ref(false)
 const previewMaterial = ref(null)
+
+const categoryDialogVisible = ref(false)
+const categoryFormRef = ref(null)
+const isEditCategory = ref(false)
+const categoryList = ref([
+  { id: 1, name: '安全生产', description: '安全生产相关资料', materialCount: 15, createTime: '2024-01-01 10:00:00' },
+  { id: 2, name: '设备操作', description: '设备操作手册和指南', materialCount: 12, createTime: '2024-01-02 10:00:00' },
+  { id: 3, name: '应急处理', description: '应急处理流程和方法', materialCount: 8, createTime: '2024-01-03 10:00:00' }
+])
+
+const linkExamDialogVisible = ref(false)
+const currentMaterial = ref(null)
+const selectedExams = ref([])
+
+const categoryForm = reactive({
+  id: null,
+  name: '',
+  description: ''
+})
 
 const materialForm = reactive({
   id: null,
@@ -167,6 +242,10 @@ const rules = {
   type: [{ required: true, message: '请选择资料类型', trigger: 'change' }],
   category: [{ required: true, message: '请选择资料分类', trigger: 'change' }],
   duration: [{ required: true, message: '请输入学习时长', trigger: 'blur' }]
+}
+
+const categoryRules = {
+  name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }]
 }
 
 const filteredMaterials = computed(() => {
@@ -266,5 +345,73 @@ const handleDelete = (row) => {
 const handlePreview = (row) => {
   previewMaterial.value = { ...row }
   previewDialogVisible.value = true
+}
+
+const handleLinkExam = (row) => {
+  currentMaterial.value = { ...row }
+  selectedExams.value = []
+  linkExamDialogVisible.value = true
+}
+
+const saveLinkExams = () => {
+  ElMessage.success('关联考试成功')
+  linkExamDialogVisible.value = false
+}
+
+const handleAddCategory = () => {
+  Object.assign(categoryForm, {
+    id: null,
+    name: '',
+    description: ''
+  })
+  isEditCategory.value = false
+  categoryDialogVisible.value = true
+}
+
+const handleEditCategory = (row) => {
+  isEditCategory.value = true
+  Object.assign(categoryForm, { ...row })
+  categoryDialogVisible.value = true
+}
+
+const handleDeleteCategory = (row) => {
+  ElMessageBox.confirm('确定要删除该分类吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    const index = categoryList.value.findIndex(c => c.id === row.id)
+    if (index !== -1) {
+      categoryList.value.splice(index, 1)
+    }
+    ElMessage.success('删除成功')
+  }).catch(() => {})
+}
+
+const saveCategory = () => {
+  if (!categoryForm.name) {
+    ElMessage.warning('请输入分类名称')
+    return
+  }
+  
+  const now = new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-')
+  
+  if (isEditCategory.value) {
+    const index = categoryList.value.findIndex(c => c.id === categoryForm.id)
+    if (index !== -1) {
+      categoryList.value[index] = { ...categoryList.value[index], ...categoryForm }
+    }
+    ElMessage.success('编辑成功')
+  } else {
+    categoryList.value.push({
+      ...categoryForm,
+      id: categoryList.value.length + 1,
+      materialCount: 0,
+      createTime: now
+    })
+    ElMessage.success('添加成功')
+  }
+  
+  categoryDialogVisible.value = false
 }
 </script>

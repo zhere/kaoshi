@@ -26,14 +26,14 @@ const routes = [
         component: () => import('@/views/admin/UserManagement.vue')
       },
       {
+        path: 'material',
+        name: 'MaterialManagement',
+        component: () => import('@/views/admin/MaterialManagement.vue')
+      },
+      {
         path: 'question',
         name: 'QuestionManagement',
         component: () => import('@/views/admin/QuestionManagement.vue')
-      },
-      {
-        path: 'template',
-        name: 'ExamTemplateManagement',
-        component: () => import('@/views/admin/ExamTemplateManagement.vue')
       },
       {
         path: 'exam',
@@ -41,24 +41,19 @@ const routes = [
         component: () => import('@/views/admin/ExamManagement.vue')
       },
       {
+        path: 'points',
+        name: 'PointsManagement',
+        component: () => import('@/views/admin/PointsManagement.vue')
+      },
+      {
         path: 'statistics',
         name: 'Statistics',
         component: () => import('@/views/admin/Statistics.vue')
       },
       {
-        path: 'export',
-        name: 'DataExport',
-        component: () => import('@/views/admin/DataExport.vue')
-      },
-      {
-        path: 'material',
-        name: 'MaterialManagement',
-        component: () => import('@/views/admin/MaterialManagement.vue')
-      },
-      {
-        path: 'points',
-        name: 'PointsManagement',
-        component: () => import('@/views/admin/PointsManagement.vue')
+        path: 'profile',
+        name: 'AdminProfile',
+        component: () => import('@/views/admin/Profile.vue')
       }
     ]
   },
@@ -100,6 +95,11 @@ const routes = [
         path: 'points',
         name: 'MyPoints',
         component: () => import('@/views/employee/MyPoints.vue')
+      },
+      {
+        path: 'profile',
+        name: 'EmployeeProfile',
+        component: () => import('@/views/employee/Profile.vue')
       }
     ]
   }

@@ -9,17 +9,13 @@
           <el-icon><User /></el-icon>
           <span>用户管理</span>
         </el-menu-item>
-        <el-menu-item index="/admin/question">
-          <el-icon><Document /></el-icon>
-          <span>题目管理</span>
-        </el-menu-item>
         <el-menu-item index="/admin/material">
           <el-icon><Reading /></el-icon>
           <span>学习资料管理</span>
         </el-menu-item>
-        <el-menu-item index="/admin/template">
-          <el-icon><Files /></el-icon>
-          <span>考试模板管理</span>
+        <el-menu-item index="/admin/question">
+          <el-icon><Notebook /></el-icon>
+          <span>题目管理</span>
         </el-menu-item>
         <el-menu-item index="/admin/exam">
           <el-icon><EditPen /></el-icon>
@@ -33,10 +29,6 @@
           <el-icon><DataAnalysis /></el-icon>
           <span>统计分析</span>
         </el-menu-item>
-        <el-menu-item index="/admin/export">
-          <el-icon><Download /></el-icon>
-          <span>数据导出</span>
-        </el-menu-item>
       </el-menu>
     </div>
     <div style="flex: 1; display: flex; flex-direction: column;">
@@ -48,8 +40,23 @@
           </el-breadcrumb>
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
-          <span>欢迎，{{ userStore.user?.name }}</span>
-          <el-button type="danger" size="small" @click="handleLogout">退出登录</el-button>
+          <el-dropdown>
+            <span style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+              <el-avatar :size="32" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" />
+              <span>{{ userStore.user?.name }}</span>
+              <el-icon><ArrowDown /></el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="router.push('/admin/profile')">
+                  <el-icon><User /></el-icon>个人中心
+                </el-dropdown-item>
+                <el-dropdown-item divided @click="handleLogout">
+                  <el-icon><SwitchButton /></el-icon>退出登录
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </div>
       <div class="admin-main">
@@ -73,13 +80,12 @@ const activeMenu = computed(() => route.path)
 
 const pageTitles = {
   '/admin/user': '用户管理',
-  '/admin/question': '题目管理',
   '/admin/material': '学习资料管理',
-  '/admin/template': '考试模板管理',
+  '/admin/question': '题目管理',
   '/admin/exam': '考试管理',
   '/admin/points': '积分管理',
   '/admin/statistics': '统计分析',
-  '/admin/export': '数据导出'
+  '/admin/profile': '个人中心'
 }
 
 const currentPageTitle = computed(() => pageTitles[route.path] || '')
