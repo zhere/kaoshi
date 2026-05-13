@@ -45,13 +45,6 @@
           {{ getCategoryName(row.category) }}
         </template>
       </el-table-column>
-      <el-table-column prop="difficulty" label="难度" width="80">
-        <template #default="{ row }">
-          <el-tag :type="row.difficulty === 'easy' ? 'success' : row.difficulty === 'medium' ? 'warning' : 'danger'" size="small">
-            {{ row.difficulty === 'easy' ? '简单' : row.difficulty === 'medium' ? '中等' : '困难' }}
-          </el-tag>
-        </template>
-      </el-table-column>
       <el-table-column prop="content" label="题目内容" show-overflow-tooltip />
       <el-table-column prop="answer" label="答案" width="80" />
       <el-table-column prop="createTime" label="创建时间" width="160" />
