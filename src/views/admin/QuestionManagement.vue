@@ -22,11 +22,6 @@
         <el-option label="多选题" value="multiple" />
         <el-option label="判断题" value="judge" />
       </el-select>
-      <el-select v-model="filterDifficulty" placeholder="难度" clearable style="width: 100px;">
-        <el-option label="简单" value="easy" />
-        <el-option label="中等" value="medium" />
-        <el-option label="困难" value="hard" />
-      </el-select>
       <el-input v-model="searchKeyword" placeholder="搜索题目内容" clearable style="width: 200px;">
         <template #prefix><el-icon><Search /></el-icon></template>
       </el-input>
@@ -179,7 +174,6 @@ const categories = computed(() => mockCategories)
 
 const filterCategory = ref('')
 const filterType = ref('')
-const filterDifficulty = ref('')
 const searchKeyword = ref('')
 
 const importDialogVisible = ref(false)
@@ -222,7 +216,6 @@ const filteredQuestions = computed(() => {
   return questionList.value.filter(q => {
     if (filterCategory.value && q.category !== filterCategory.value) return false
     if (filterType.value && q.type !== filterType.value) return false
-    if (filterDifficulty.value && q.difficulty !== filterDifficulty.value) return false
     if (searchKeyword.value && !q.content.includes(searchKeyword.value)) return false
     return true
   })
