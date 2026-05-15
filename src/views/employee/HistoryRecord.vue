@@ -149,6 +149,14 @@ const filteredRecords = computed(() => {
   if (filterResult.value) {
     records = records.filter(r => filterResult.value === 'pass' ? r.isPass : !r.isPass)
   }
+  if (dateRange.value && dateRange.value.length === 2) {
+    const start = new Date(dateRange.value[0]).getTime()
+    const end = new Date(dateRange.value[1]).getTime() + 86400000
+    records = records.filter(r => {
+      const t = new Date(r.submitTime).getTime()
+      return t >= start && t <= end
+    })
+  }
   return records
 })
 

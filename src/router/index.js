@@ -4,12 +4,17 @@ import { useUserStore } from '@/stores/user'
 const routes = [
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/admin-login'
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/Login.vue')
+    path: '/admin-login',
+    name: 'AdminLogin',
+    component: () => import('@/views/AdminLogin.vue')
+  },
+  {
+    path: '/employee-login',
+    name: 'EmployeeLogin',
+    component: () => import('@/views/EmployeeLogin.vue')
   },
   {
     path: '/admin',
@@ -102,6 +107,11 @@ const routes = [
         component: () => import('@/views/employee/Profile.vue')
       }
     ]
+  },
+  {
+    path: '/pc-exam/:id',
+    name: 'PcExam',
+    component: () => import('@/views/employee/PcExam.vue')
   }
 ]
 
@@ -114,10 +124,14 @@ router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
   
   if (to.meta.requiresAuth && !userStore.isLoggedIn) {
-    next('/login')
+    if (to.meta.requiresAdmin) {
+      next('/admin-login')
+    } else {
+      next('/employee-login')
+    }
   } else if (to.meta.requiresAdmin && userStore.loginType !== 'admin') {
-    next('/login')
-  } else if (to.path === '/login' && userStore.isLoggedIn) {
+    next('/admin-login')
+  } else if ((to.path === '/admin-login' || to.path === '/employee-login') && userStore.isLoggedIn) {
     if (userStore.loginType === 'admin') {
       next('/admin/user')
     } else {

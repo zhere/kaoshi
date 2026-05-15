@@ -69,13 +69,6 @@
           <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="难度等级" prop="difficulty">
-        <el-select v-model="questionForm.difficulty" placeholder="请选择难度" style="width: 100%">
-          <el-option label="简单" value="easy" />
-          <el-option label="中等" value="medium" />
-          <el-option label="困难" value="hard" />
-        </el-select>
-      </el-form-item>
       <el-form-item label="题目内容" prop="content">
         <el-input v-model="questionForm.content" type="textarea" :rows="3" placeholder="请输入题目内容" />
       </el-form-item>
@@ -196,7 +189,6 @@ const questionForm = reactive({
   id: null,
   type: 'single',
   category: '',
-  difficulty: 'medium',
   content: '',
   options: ['', '', '', ''],
   answer: '',
@@ -207,7 +199,6 @@ const questionForm = reactive({
 const rules = {
   type: [{ required: true, message: '请选择题目类型', trigger: 'change' }],
   category: [{ required: true, message: '请选择题目分类', trigger: 'change' }],
-  difficulty: [{ required: true, message: '请选择难度等级', trigger: 'change' }],
   content: [{ required: true, message: '请输入题目内容', trigger: 'blur' }],
   answer: [{ required: true, message: '请选择正确答案', trigger: 'change' }]
 }
@@ -231,7 +222,6 @@ const resetForm = () => {
     id: null,
     type: 'single',
     category: '',
-    difficulty: 'medium',
     content: '',
     options: ['', '', '', ''],
     answer: '',
@@ -344,6 +334,12 @@ const confirmImport = () => {
 }
 
 const handleDownloadTemplate = () => {
+  const link = document.createElement('a')
+  link.href = '/题目模板.csv'
+  link.download = '题目导入模板.csv'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
   ElMessage.success('模板下载成功')
 }
 
@@ -365,7 +361,6 @@ const generateQuestions = () => {
         content: 'AI生成：在电力生产工作中，安全第一的原则是指（）。',
         type: aiForm.type,
         category: aiForm.category,
-        difficulty: 'medium',
         options: ['生产第一，安全第二', '安全第一，预防为主', '效益第一，安全第二', '进度第一，安全第二'],
         answer: 'B',
         analysis: '安全第一，预防为主是电力生产的基本方针。'
@@ -374,7 +369,6 @@ const generateQuestions = () => {
         content: 'AI生成：电力企业安全生产责任制应当包括（）。',
         type: aiForm.type,
         category: aiForm.category,
-        difficulty: 'medium',
         options: ['主要负责人职责', '分管负责人职责', '安全管理人员职责', '从业人员职责'],
         answer: aiForm.type === 'multiple' ? 'ABCD' : 'A',
         analysis: '安全生产责任制应覆盖各级各类人员。'

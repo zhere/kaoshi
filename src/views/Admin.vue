@@ -97,7 +97,7 @@ const handleLogout = () => {
     type: 'warning'
   }).then(() => {
     userStore.logout()
-    router.push('/login')
+    router.push('/admin-login')
     ElMessage.success('已退出登录')
   }).catch(() => {})
 }

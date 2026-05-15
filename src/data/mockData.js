@@ -5,6 +5,7 @@ export const users = [
   { id: 4, username: 'emp001', password: '123456', name: '王五', role: 'employee', department: '运维部', phone: '13800138003', email: 'wangwu@power.com', status: 'active', employeeId: 'EMP001', createTime: '2024-02-01 09:00:00' },
   { id: 5, username: 'emp002', password: '123456', name: '赵六', role: 'employee', department: '检修部', phone: '13800138004', email: 'zhaoliu@power.com', status: 'active', employeeId: 'EMP002', createTime: '2024-02-15 10:00:00' },
   { id: 6, username: 'emp003', password: '123456', name: '钱七', role: 'employee', department: '运维部', phone: '13800138005', email: 'qianqi@power.com', status: 'active', employeeId: 'EMP003', createTime: '2024-03-01 14:00:00' },
+  { id: 7, username: 'emp004', password: '123456', name: '测试用户', role: 'employee', department: '运维部', phone: '13812345678', email: 'test@power.com', status: 'active', employeeId: 'EMP004', createTime: '2024-03-15 09:00:00' }
 ]
 
 export const categories = [
@@ -392,6 +393,7 @@ export const exams = [
   {
     id: 1,
     name: '2024年第一季度安全生产考试',
+    type: 'pc',
     templateId: 1,
     category: 1,
     status: 'ongoing',
@@ -404,11 +406,15 @@ export const exams = [
     questions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
     createTime: '2024-02-28 10:00:00',
     creator: 'admin',
-    qrcode: 'EXAM_001_2024Q1'
+    qrcode: 'EXAM_001_2024Q1',
+    examUrl: 'http://localhost:3000/pc-exam/1',
+    targetType: 'all',
+    maxAttempts: 1
   },
   {
     id: 2,
     name: '电气安全操作专项考试',
+    type: 'miniapp',
     templateId: 2,
     category: 2,
     status: 'upcoming',
@@ -426,6 +432,7 @@ export const exams = [
   {
     id: 3,
     name: '新员工入职安全培训考试',
+    type: 'miniapp',
     templateId: 1,
     category: 3,
     status: 'ended',
@@ -439,6 +446,25 @@ export const exams = [
     createTime: '2024-01-30 10:00:00',
     creator: 'admin',
     qrcode: 'EXAM_003_NEW'
+  },
+  {
+    id: 4,
+    name: '2024年第二季度安全知识竞赛',
+    type: 'miniapp',
+    category: 1,
+    status: 'ongoing',
+    startTime: '2024-05-01 09:00:00',
+    endTime: '2024-06-30 18:00:00',
+    duration: 60,
+    totalScore: 100,
+    passScore: 60,
+    questionCount: 10,
+    questions: [1, 2, 3, 4, 5, 14, 15, 16, 17, 18],
+    createTime: '2024-04-28 10:00:00',
+    creator: 'admin',
+    qrcode: 'EXAM_004_2024Q2',
+    targetType: 'all',
+    maxAttempts: 3
   }
 ]
 
@@ -512,16 +538,128 @@ export const examRecords = [
     wrongCount: 2,
     submitTime: '2024-02-20 09:30:00',
     duration: 22
+  },
+  {
+    id: 6,
+    examId: 4,
+    userId: 4,
+    userName: '王五',
+    department: '运维部',
+    answers: { 1: 'B', 2: 'A', 3: 'D', 4: 'D', 5: 'B', 14: 'ABCD', 15: 'ABCD', 16: 'ABCD', 17: 'ABCD', 18: 'ABCD' },
+    score: 92,
+    isPass: true,
+    correctCount: 9,
+    wrongCount: 1,
+    submitTime: '2024-05-10 15:30:00',
+    duration: 35
+  },
+  {
+    id: 7,
+    examId: 4,
+    userId: 5,
+    userName: '赵六',
+    department: '检修部',
+    answers: { 1: 'B', 2: 'A', 3: 'C', 4: 'D', 5: 'A', 14: 'ABCD', 15: 'ABC', 16: 'ABCD', 17: 'ABC', 18: 'ABCD' },
+    score: 76,
+    isPass: true,
+    correctCount: 7,
+    wrongCount: 3,
+    submitTime: '2024-05-12 10:45:00',
+    duration: 40
+  },
+  {
+    id: 8,
+    examId: 2,
+    userId: 4,
+    userName: '王五',
+    department: '运维部',
+    answers: { 3: 'D', 4: 'D', 5: 'B', 12: 'B', 13: 'A', 15: 'ABCD', 21: 'B', 22: 'A', 28: 'B', 29: 'A' },
+    score: 88,
+    isPass: true,
+    correctCount: 9,
+    wrongCount: 1,
+    submitTime: '2024-04-02 14:00:00',
+    duration: 32
+  },
+  {
+    id: 9,
+    examId: 2,
+    userId: 6,
+    userName: '钱七',
+    department: '运维部',
+    answers: { 3: 'C', 4: 'D', 5: 'A', 12: 'B', 13: 'B', 15: 'ABC', 21: 'A', 22: 'C', 28: 'B', 29: 'D' },
+    score: 62,
+    isPass: true,
+    correctCount: 6,
+    wrongCount: 4,
+    submitTime: '2024-04-03 09:15:00',
+    duration: 40
+  },
+  {
+    id: 10,
+    examId: 3,
+    userId: 6,
+    userName: '钱七',
+    department: '运维部',
+    answers: { 1: 'B', 2: 'A', 6: 'B', 8: 'C', 10: 'C', 14: 'ABCD', 17: 'ABCD', 20: 'B', 24: 'A', 26: 'A' },
+    score: 85,
+    isPass: true,
+    correctCount: 9,
+    wrongCount: 1,
+    submitTime: '2024-02-18 16:30:00',
+    duration: 20
+  },
+  {
+    id: 11,
+    examId: 4,
+    userId: 4,
+    userName: '王五',
+    department: '运维部',
+    answers: { 1: 'A', 2: 'C', 3: 'B', 4: 'D', 5: 'C', 14: 'AB', 15: 'AB', 16: 'ABCD', 17: 'ABCD', 18: 'ABCD' },
+    score: 48,
+    isPass: false,
+    correctCount: 5,
+    wrongCount: 5,
+    submitTime: '2024-05-08 10:00:00',
+    duration: 55
+  },
+  {
+    id: 12,
+    examId: 1,
+    userId: 5,
+    userName: '赵六',
+    department: '检修部',
+    answers: { 1: 'C', 2: 'B', 3: 'A', 4: 'C', 5: 'C', 6: 'A', 7: 'C', 8: 'B', 9: 'A', 10: 'A', 11: 'C', 12: 'A', 13: 'B', 14: 'A', 15: 'A', 16: 'A', 17: 'A', 18: 'A', 19: 'A', 20: 'A' },
+    score: 35,
+    isPass: false,
+    correctCount: 7,
+    wrongCount: 13,
+    submitTime: '2024-03-10 09:30:00',
+    duration: 30
+  },
+  {
+    id: 13,
+    examId: 4,
+    userId: 7,
+    userName: '测试用户',
+    department: '运维部',
+    answers: { 1: 'A', 2: 'A', 3: 'C', 4: 'D', 5: 'B', 14: 'AB', 15: 'ABCD', 16: 'ABC', 17: 'ABCD', 18: 'A' },
+    score: 52,
+    isPass: false,
+    correctCount: 5,
+    wrongCount: 5,
+    submitTime: '2024-06-01 14:20:00',
+    duration: 45
   }
 ]
 
 export const statistics = {
-  totalExams: 3,
+  totalExams: 4,
   totalQuestions: 30,
   totalUsers: 6,
-  totalRecords: 5,
-  averageScore: 74.4,
-  passRate: 80,
+  totalRecords: 13,
+  averageScore: 68.9,
+  passRate: 77,
   departmentStats: [
     { name: '运维部', count: 15, averageScore: 78, passRate: 85 },
     { name: '检修部', count: 10, averageScore: 72, passRate: 75 },

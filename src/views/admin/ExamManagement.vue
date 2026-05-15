@@ -6,7 +6,6 @@
         <el-icon><Plus /></el-icon>创建考试
       </el-button>
       <el-select v-model="filterStatus" placeholder="考试状态" clearable style="width: 120px;">
-        <el-option label="草稿" value="draft" />
         <el-option label="进行中" value="ongoing" />
         <el-option label="未开始" value="upcoming" />
         <el-option label="已结束" value="ended" />
@@ -24,8 +23,8 @@
       <el-table-column prop="name" label="考试名称" width="250" />
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
-          <el-tag :type="row.status === 'ongoing' ? 'success' : row.status === 'upcoming' ? 'warning' : row.status === 'draft' ? 'info' : 'info'">
-            {{ row.status === 'ongoing' ? '进行中' : row.status === 'upcoming' ? '未开始' : row.status === 'draft' ? '草稿' : '已结束' }}
+          <el-tag :type="row.status === 'ongoing' ? 'success' : row.status === 'upcoming' ? 'warning' : 'info'">
+            {{ row.status === 'ongoing' ? '进行中' : row.status === 'upcoming' ? '未开始' : '已结束' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -40,19 +39,23 @@
           <span v-else>全员</span>
         </template>
       </el-table-column>
+      <el-table-column prop="type" label="考试类型" width="120">
+        <template #default="{ row }">
+          <el-tag :type="row.type === 'pc' ? 'primary' : 'success'" size="small">
+            {{ row.type === 'pc' ? '电脑端' : '小程序端' }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="category" label="考试类目" width="120">
         <template #default="{ row }">
           {{ getCategoryName(row.category) }}
         </template>
       </el-table-column>
       <el-table-column prop="passScore" label="及格分" width="80" />
-      <el-table-column label="操作" width="280">
+      <el-table-column label="操作" width="220">
         <template #default="{ row }">
           <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
           <el-button type="success" size="small" @click="handleViewDetail(row)">详情</el-button>
-          <el-button type="warning" size="small" @click="handleStatusChange(row)">
-            {{ row.status === 'draft' ? '发布' : row.status === 'ongoing' ? '暂停' : row.status === 'upcoming' ? '发布' : '重启' }}
-          </el-button>
           <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
@@ -72,9 +75,13 @@
       </el-form-item>
       <el-form-item label="考试类型" prop="type">
         <el-radio-group v-model="examForm.type">
-          <el-radio label="exam">正式考试</el-radio>
-          <el-radio label="practice">练习模式</el-radio>
+          <el-radio label="pc">电脑端考试</el-radio>
+          <el-radio label="miniapp">小程序端考试</el-radio>
         </el-radio-group>
+      </el-form-item>
+      <el-form-item v-if="examForm.type === 'pc'" label="考试地址" prop="examUrl">
+        <el-input v-model="examForm.examUrl" placeholder="电脑端考试地址，留空则自动生成" />
+        <span style="margin-left: 10px; color: #909399; font-size: 12px;">员工通过此地址在电脑上参加考试</span>
       </el-form-item>
       <el-form-item label="开始时间" prop="startTime">
         <el-date-picker v-model="examForm.startTime" type="datetime" placeholder="选择开始时间" style="width: 100%" />
@@ -95,7 +102,6 @@
       <el-form-item label="题目配比">
         <div style="width: 100%;">
           <div v-for="(item, index) in examForm.questionConfig" :key="index" style="display: flex; gap: 8px; margin-bottom: 10px; align-items: center; flex-wrap: wrap;">
-            <el-tree-select v-model="item.categoryId" :data="categoryTree" :props="{ label: 'name', children: 'children', value: 'id' }" placeholder="选择类目" style="width: 180px;" check-strictly clearable />
             <el-select v-model="item.type" placeholder="题型" style="width: 100px;">
               <el-option label="单选题" value="single" />
               <el-option label="多选题" value="multiple" />
@@ -121,7 +127,7 @@
             </div>
           </div>
           <div style="margin-top: 5px; font-size: 12px; color: #999;">
-            提示：实际考试时从指定类目中随机抽取对应数量的题目，形成统一试卷
+            提示：题目从当前考试类目中随机抽取，形成统一试卷
           </div>
         </div>
       </el-form-item>
@@ -188,6 +194,11 @@
       <el-descriptions-item label="题目数量">{{ getExamQuestionCount(currentExam) }} 道</el-descriptions-item>
       <el-descriptions-item label="总分">{{ getExamTotalScore(currentExam) }} 分</el-descriptions-item>
       <el-descriptions-item label="及格分">{{ currentExam.passScore }} 分</el-descriptions-item>
+      <el-descriptions-item v-if="currentExam.type === 'pc'" label="考试地址" :span="2">
+        <el-link type="primary" :href="currentExam.examUrl || getExamUrl(currentExam)" target="_blank">
+          {{ currentExam.examUrl || getExamUrl(currentExam) }}
+        </el-link>
+      </el-descriptions-item>
       <el-descriptions-item label="创建人">{{ currentExam.creator }}</el-descriptions-item>
       <el-descriptions-item label="创建时间">{{ currentExam.createTime }}</el-descriptions-item>
     </el-descriptions>
@@ -231,7 +242,8 @@
           </div>
         </div>
         <div style="flex: 1;">
-          <p style="margin-bottom: 15px; color: #606266; font-size: 14px;">扫码或通过海报二维码参加考试</p>
+          <p v-if="currentExam.type === 'pc'" style="margin-bottom: 15px; color: #606266; font-size: 14px;">考试地址将显示在海报上，员工复制地址在电脑上参加考试</p>
+          <p v-else style="margin-bottom: 15px; color: #606266; font-size: 14px;">扫码或通过海报二维码参加考试</p>
           <p style="margin-bottom: 15px; color: #409eff; font-size: 14px; font-weight: bold;">考试码：{{ currentExam.qrcode || 'EXAM_' + String(currentExam.id).padStart(3, '0') }}</p>
           <div style="display: flex; flex-direction: column; gap: 10px;">
             <el-button type="primary" @click="handleDownloadPosterFromDetail">
@@ -281,8 +293,14 @@
     <div class="poster-preview" style="text-align: center;">
       <img :src="posterImageUrl" style="width: 100%; max-width: 375px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" />
       <p style="margin-top: 20px; color: #606266; font-size: 14px; line-height: 1.6;">
-        请下载图片并分享给员工<br>
-        员工扫码即可参加考试
+        <template v-if="posterExamData.type === 'pc'">
+          请下载图片并分享给员工<br>
+          员工复制地址在电脑上参加考试
+        </template>
+        <template v-else>
+          请下载图片并分享给员工<br>
+          员工扫码即可参加考试
+        </template>
       </p>
     </div>
     <template #footer>
@@ -372,18 +390,18 @@ const examStats = reactive({
 const examForm = reactive({
   id: null,
   name: '',
-  type: 'exam',
+  type: 'miniapp',
   category: '',
   startTime: '',
   endTime: '',
   duration: 30,
   passScore: 60,
+  examUrl: '',
   questionConfig: [
-    { categoryId: null, type: 'single', count: 5, scorePerQuestion: 5 },
-    { categoryId: null, type: 'multiple', count: 3, scorePerQuestion: 5 },
-    { categoryId: null, type: 'judge', count: 2, scorePerQuestion: 5 }
+    { type: 'single', count: 5, scorePerQuestion: 5 },
+    { type: 'multiple', count: 3, scorePerQuestion: 5 },
+    { type: 'judge', count: 2, scorePerQuestion: 5 }
   ],
-  status: 'draft',
   createTime: '',
   creator: 'admin',
   qrcode: '',
@@ -404,7 +422,7 @@ const rules = {
 }
 
 const addQuestionConfig = () => {
-  examForm.questionConfig.push({ categoryId: null, type: 'single', count: 5, scorePerQuestion: 5 })
+  examForm.questionConfig.push({ type: 'single', count: 5, scorePerQuestion: 5 })
 }
 
 const removeQuestionConfig = (index) => {
@@ -443,22 +461,35 @@ const getExamTotalScore = (exam) => {
   return exam.totalScore || 0
 }
 
+const getExamUrl = (exam) => {
+  return `${window.location.origin}/pc-exam/${exam.id}`
+}
+
+const getAutoExamStatus = (startTime, endTime) => {
+  const now = new Date()
+  const start = new Date(startTime)
+  const end = new Date(endTime)
+  if (now < start) return 'upcoming'
+  if (now >= start && now <= end) return 'ongoing'
+  return 'ended'
+}
+
 const resetForm = () => {
   Object.assign(examForm, {
     id: null,
     name: '',
-    type: 'exam',
+    type: 'miniapp',
     category: '',
     startTime: '',
     endTime: '',
     duration: 30,
     passScore: 60,
+    examUrl: '',
     questionConfig: [
-      { categoryId: null, type: 'single', count: 5, scorePerQuestion: 5 },
-      { categoryId: null, type: 'multiple', count: 3, scorePerQuestion: 5 },
-      { categoryId: null, type: 'judge', count: 2, scorePerQuestion: 5 }
+      { type: 'single', count: 5, scorePerQuestion: 5 },
+      { type: 'multiple', count: 3, scorePerQuestion: 5 },
+      { type: 'judge', count: 2, scorePerQuestion: 5 }
     ],
-    status: 'draft',
     createTime: '',
     creator: 'admin',
     qrcode: '',
@@ -482,9 +513,9 @@ const handleEdit = (row) => {
   isEdit.value = true
   dialogTitle.value = '编辑考试'
   const qConfig = row.questionConfig || [
-    { categoryId: null, type: 'single', count: 5, scorePerQuestion: 5 },
-    { categoryId: null, type: 'multiple', count: 3, scorePerQuestion: 5 },
-    { categoryId: null, type: 'judge', count: 2, scorePerQuestion: 5 }
+    { type: 'single', count: 5, scorePerQuestion: 5 },
+    { type: 'multiple', count: 3, scorePerQuestion: 5 },
+    { type: 'judge', count: 2, scorePerQuestion: 5 }
   ]
   Object.assign(examForm, { ...row, questionConfig: JSON.parse(JSON.stringify(qConfig)) })
   dialogVisible.value = true
@@ -492,30 +523,37 @@ const handleEdit = (row) => {
 
 const handleSubmit = async () => {
   if (!examFormRef.value) return
-  await examFormRef.value.validate((valid) => {
+  await examFormRef.value.validate(async (valid) => {
     if (valid) {
       if (totalConfigCount.value === 0) {
         ElMessage.warning('请至少配置一道题目')
         return
       }
       const now = new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-')
+      const examStatus = getAutoExamStatus(examForm.startTime, examForm.endTime)
       if (isEdit.value) {
         const index = examList.value.findIndex(e => e.id === examForm.id)
         if (index !== -1) {
-          examList.value[index] = { ...examList.value[index], ...examForm }
+          const updated = { ...examList.value[index], ...examForm, status: examStatus }
+          examList.value[index] = updated
         }
         ElMessage.success('编辑成功')
+        dialogVisible.value = false
       } else {
         const newExam = {
           ...examForm,
           id: examList.value.length + 1,
+          status: examStatus,
           createTime: now,
-          qrcode: 'EXAM_' + String(examList.value.length + 1).padStart(3, '0')
+          qrcode: 'EXAM_' + String(examList.value.length + 1).padStart(3, '0'),
+          examUrl: examForm.examUrl || getExamUrl(examForm)
         }
         examList.value.push(newExam)
-        ElMessage.success('创建成功')
+        dialogVisible.value = false
+        ElMessage.success('考试创建成功')
+        await generateExamPoster(newExam)
+        posterDialogVisible.value = true
       }
-      dialogVisible.value = false
     }
   })
 }
@@ -582,57 +620,6 @@ const confirmBgChange = () => {
   }
 }
 
-const handleCopy = (row) => {
-  ElMessageBox.confirm('确定要复制该考试吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'info'
-  }).then(() => {
-    const newExam = {
-      ...row,
-      id: examList.value.length + 1,
-      name: row.name + ' (副本)',
-      status: 'draft',
-      createTime: new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-'),
-      qrcode: 'EXAM_' + String(examList.value.length + 1).padStart(3, '0')
-    }
-    examList.value.push(newExam)
-    ElMessage.success('考试复制成功')
-  }).catch(() => {})
-}
-
-const handleStatusChange = async (row) => {
-  const statusMap = {
-    'draft': { newStatus: 'ongoing', message: '发布' },
-    'upcoming': { newStatus: 'ongoing', message: '发布' },
-    'ongoing': { newStatus: 'paused', message: '暂停' },
-    'paused': { newStatus: 'ongoing', message: '重启' },
-    'ended': { newStatus: 'ongoing', message: '重启' }
-  }
-
-  const { newStatus, message } = statusMap[row.status]
-  const isPublishing = row.status === 'draft' || row.status === 'upcoming'
-  const examData = { ...row }
-
-  ElMessageBox.confirm(`确定要${message}该考试吗？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async () => {
-    const index = examList.value.findIndex(e => e.id === row.id)
-    if (index !== -1) {
-      examList.value[index].status = newStatus
-    }
-
-    if (isPublishing) {
-      await generateExamPoster(examData)
-      posterDialogVisible.value = true
-    }
-
-    ElMessage.success(`考试已${message}`)
-  }).catch(() => {})
-}
-
 // 绘制圆角矩形辅助函数
 const drawRoundRect = (ctx, x, y, width, height, radius) => {
   ctx.beginPath()
@@ -654,8 +641,10 @@ const generateExamPoster = async (exam) => {
     posterExamData.value = exam
 
     // 生成二维码数据URL
-    const examUrl = `${window.location.origin}/exam/${exam.id}`
-    const qrCodeDataUrl = await QRCode.toDataURL(examUrl, {
+    const examAccessUrl = exam.type === 'pc'
+      ? (exam.examUrl || getExamUrl(exam))
+      : `${window.location.origin}/employee/exam/${exam.id}`
+    const qrCodeDataUrl = await QRCode.toDataURL(examAccessUrl, {
       width: 200,
       margin: 2,
       color: { dark: '#000000', light: '#ffffff' }
@@ -742,6 +731,7 @@ const generateExamPoster = async (exam) => {
     ctx.font = '28px "Microsoft YaHei", sans-serif'
 
     const infoItems = [
+      { icon: '📂', label: '考试类目', value: getCategoryName(exam.category) || '未分类' },
       { icon: '📅', label: '考试时间', value: exam.startTime || '待定' },
       { icon: '⏱️', label: '考试时长', value: `${exam.duration || 0}分钟` },
       { icon: '📝', label: '题目数量', value: `${getExamQuestionCount(exam)}题 / ${getExamTotalScore(exam)}分` },
@@ -767,29 +757,53 @@ const generateExamPoster = async (exam) => {
       yPos += 70
     })
 
-    // 绘制二维码区域背景
-    ctx.fillStyle = '#f5f7fa'
-    drawRoundRect(ctx, 200, 820, 350, 280, 16)
-    ctx.fill()
+    if (exam.type === 'pc') {
+      // 电脑端考试：展示考试地址
+      ctx.fillStyle = '#f5f7fa'
+      drawRoundRect(ctx, 60, 820, 630, 280, 16)
+      ctx.fill()
 
-    // 绘制二维码
-    const qrImage = new Image()
-    qrImage.src = qrCodeDataUrl
-    await new Promise((resolve) => {
-      qrImage.onload = resolve
-    })
-    ctx.drawImage(qrImage, 275, 840, 200, 200)
+      ctx.fillStyle = '#303133'
+      ctx.font = 'bold 28px "Microsoft YaHei", sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText('电脑端考试地址', 375, 880)
 
-    // 绘制扫码提示
-    ctx.fillStyle = '#606266'
-    ctx.font = '24px "Microsoft YaHei", sans-serif'
-    ctx.textAlign = 'center'
-    ctx.fillText('扫码参加考试', 375, 1070)
+      ctx.fillStyle = '#409EFF'
+      ctx.font = '22px "Microsoft YaHei", sans-serif'
+      const displayUrl = examAccessUrl.length > 45 ? examAccessUrl.substring(0, 42) + '...' : examAccessUrl
+      ctx.fillText(displayUrl, 375, 940)
 
-    // 绘制考试码
-    ctx.fillStyle = '#009944'
-    ctx.font = 'bold 22px "Microsoft YaHei", sans-serif'
-    ctx.fillText(`考试码：${exam.qrcode || 'EXAM_' + String(exam.id).padStart(3, '0')}`, 375, 1105)
+      // 绘制复制提示
+      ctx.fillStyle = '#909399'
+      ctx.font = '20px "Microsoft YaHei", sans-serif'
+      ctx.fillText('请复制上方地址在电脑浏览器中打开参加考试', 375, 990)
+
+      // 绘制考试码
+      ctx.fillStyle = '#009944'
+      ctx.font = 'bold 22px "Microsoft YaHei", sans-serif'
+      ctx.fillText(`考试码：${exam.qrcode || 'EXAM_' + String(exam.id).padStart(3, '0')}`, 375, 1060)
+    } else {
+      // 小程序端考试：展示二维码
+      ctx.fillStyle = '#f5f7fa'
+      drawRoundRect(ctx, 200, 820, 350, 280, 16)
+      ctx.fill()
+
+      const qrImage = new Image()
+      qrImage.src = qrCodeDataUrl
+      await new Promise((resolve) => {
+        qrImage.onload = resolve
+      })
+      ctx.drawImage(qrImage, 275, 840, 200, 200)
+
+      ctx.fillStyle = '#606266'
+      ctx.font = '24px "Microsoft YaHei", sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText('扫码参加考试', 375, 1070)
+
+      ctx.fillStyle = '#009944'
+      ctx.font = 'bold 22px "Microsoft YaHei", sans-serif'
+      ctx.fillText(`考试码：${exam.qrcode || 'EXAM_' + String(exam.id).padStart(3, '0')}`, 375, 1105)
+    }
 
     // 绘制底部品牌区域
     ctx.fillStyle = '#009944'

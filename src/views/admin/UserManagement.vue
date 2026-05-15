@@ -623,6 +623,12 @@ const confirmImport = () => {
 }
 
 const handleDownloadTemplate = () => {
+  const link = document.createElement('a')
+  link.href = '/用户模板.csv'
+  link.download = '用户导入模板.csv'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
   ElMessage.success('模板下载成功')
 }
 

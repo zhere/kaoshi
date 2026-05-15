@@ -46,9 +46,9 @@
         <el-icon><Clock /></el-icon>
         <span>历史</span>
       </div>
-      <div class="mobile-nav-item" @click="handleLogout">
-        <el-icon><SwitchButton /></el-icon>
-        <span>退出</span>
+      <div class="mobile-nav-item" :class="{ active: route.path === '/employee/profile' }" @click="router.push('/employee/profile')">
+        <el-icon><User /></el-icon>
+        <span>我的</span>
       </div>
     </div>
   </div>
@@ -71,7 +71,7 @@ const handleLogout = () => {
     type: 'warning'
   }).then(() => {
     userStore.logout()
-    router.push('/login')
+    router.push('/employee-login')
     ElMessage.success('已退出登录')
   }).catch(() => {})
 }

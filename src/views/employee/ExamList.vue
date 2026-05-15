@@ -1,9 +1,14 @@
 <template>
   <div>
     <div class="page-card">
-      <div class="page-title">可参与的考试</div>
+      <div class="page-title">考试中心</div>
+      <el-tabs v-model="activeTab" style="margin-bottom: 15px;">
+        <el-tab-pane label="进行中" name="ongoing"></el-tab-pane>
+        <el-tab-pane label="已完成" name="completed"></el-tab-pane>
+      </el-tabs>
+
       <div class="filter-bar">
-        <el-select v-model="filterStatus" placeholder="考试状态" clearable class="filter-select">
+        <el-select v-if="activeTab === 'ongoing'" v-model="filterStatus" placeholder="考试状态" clearable class="filter-select">
           <el-option label="进行中" value="ongoing" />
           <el-option label="未开始" value="upcoming" />
         </el-select>
@@ -11,33 +16,64 @@
           <template #prefix><el-icon><Search /></el-icon></template>
         </el-input>
       </div>
-      <div v-if="filteredExams.length === 0" class="empty-tip">
-        暂无可参与的考试
-      </div>
-      <div v-else>
-        <div v-for="exam in filteredExams" :key="exam.id" class="exam-card" @click="viewExamDetail(exam)">
-          <div class="exam-card-header">
-            <span class="exam-card-title">{{ exam.name }}</span>
-            <el-tag :type="exam.status === 'ongoing' ? 'success' : 'warning'" size="small">
-              {{ exam.status === 'ongoing' ? '进行中' : '未开始' }}
-            </el-tag>
-          </div>
-          <div class="exam-card-info">
-            <span><el-icon><Clock /></el-icon> {{ exam.duration }}分钟</span>
-            <span><el-icon><Document /></el-icon> {{ exam.questionCount }}题</span>
-            <span><el-icon><Star /></el-icon> {{ exam.totalScore }}分</span>
-            <span><el-icon><CircleCheck /></el-icon> 及格{{ exam.passScore }}分</span>
-          </div>
-          <div class="exam-card-time">
-            <span>开始：{{ exam.startTime }}</span>
-            <span>结束：{{ exam.endTime }}</span>
-          </div>
-          <div class="exam-card-action">
-            <el-button v-if="exam.status === 'ongoing'" type="primary" @click.stop="startExam(exam)">开始答题</el-button>
-            <el-button v-else type="info" disabled>未开始</el-button>
+
+      <!-- 进行中 -->
+      <template v-if="activeTab === 'ongoing'">
+        <div v-if="ongoingExams.length === 0" class="empty-tip">
+          暂无可参与的考试
+        </div>
+        <div v-else>
+          <div v-for="exam in ongoingExams" :key="exam.id" class="exam-card" @click="viewExamDetail(exam)">
+            <div class="exam-card-header">
+              <span class="exam-card-title">{{ exam.name }}</span>
+              <el-tag :type="exam.status === 'ongoing' ? 'success' : 'warning'" size="small">
+                {{ exam.status === 'ongoing' ? '进行中' : '未开始' }}
+              </el-tag>
+            </div>
+            <div class="exam-card-info">
+              <span><el-icon><Clock /></el-icon> {{ exam.duration }}分钟</span>
+              <span><el-icon><Document /></el-icon> {{ getQuestionCount(exam) }}题</span>
+              <span><el-icon><Star /></el-icon> {{ getTotalScore(exam) }}分</span>
+              <span><el-icon><CircleCheck /></el-icon> 及格{{ exam.passScore }}分</span>
+            </div>
+            <div class="exam-card-time">
+              <span>开始：{{ exam.startTime }}</span>
+              <span>结束：{{ exam.endTime }}</span>
+            </div>
+            <div class="exam-card-action">
+              <el-button v-if="exam.status === 'ongoing'" type="primary" @click.stop="startExam(exam)">开始答题</el-button>
+              <el-button v-else type="info" disabled>未开始</el-button>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
+
+      <!-- 已完成 -->
+      <template v-if="activeTab === 'completed'">
+        <div v-if="completedExams.length === 0" class="empty-tip">
+          暂无已完成的考试
+        </div>
+        <div v-else>
+          <div v-for="record in completedExams" :key="record.id" class="exam-card" @click="viewResult(record)">
+            <div class="exam-card-header">
+              <span class="exam-card-title">{{ record.examName }}</span>
+              <el-tag :type="record.isPass ? 'success' : 'danger'" size="small">
+                {{ record.isPass ? '已通过' : '未通过' }}
+              </el-tag>
+            </div>
+            <div class="exam-card-info">
+              <span><el-icon><CircleCheck /></el-icon> 得分：<strong :style="{ color: record.isPass ? '#67C23A' : '#F56C6C' }">{{ record.score }}分</strong></span>
+              <span><el-icon><Select /></el-icon> 正确 {{ record.correctCount }}/{{ record.totalQuestions }}</span>
+            </div>
+            <div class="exam-card-time">
+              <span>提交时间：{{ record.submitTime }}</span>
+            </div>
+            <div class="exam-card-action">
+              <el-button type="primary" size="small" @click.stop="viewResult(record)">查看详情</el-button>
+            </div>
+          </div>
+        </div>
+      </template>
     </div>
 
     <el-dialog v-model="detailDialogVisible" title="考试详情" width="500px" class="exam-detail-dialog">
@@ -51,8 +87,8 @@
         <el-descriptions-item label="开始时间">{{ currentExam.startTime }}</el-descriptions-item>
         <el-descriptions-item label="结束时间">{{ currentExam.endTime }}</el-descriptions-item>
         <el-descriptions-item label="考试时长">{{ currentExam.duration }} 分钟</el-descriptions-item>
-        <el-descriptions-item label="题目数量">{{ currentExam.questionCount }} 道</el-descriptions-item>
-        <el-descriptions-item label="试卷总分">{{ currentExam.totalScore }} 分</el-descriptions-item>
+        <el-descriptions-item label="题目数量">{{ getQuestionCount(currentExam) }} 道</el-descriptions-item>
+        <el-descriptions-item label="试卷总分">{{ getTotalScore(currentExam) }} 分</el-descriptions-item>
         <el-descriptions-item label="及格分数">{{ currentExam.passScore }} 分</el-descriptions-item>
       </el-descriptions>
       <template #footer>
@@ -67,21 +103,70 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { exams as mockExams } from '../../data/mockData'
+import { exams as mockExams, examRecords as mockRecords } from '../../data/mockData'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
-const examList = ref([...mockExams.filter(e => e.status !== 'ended')])
+const userStore = useUserStore()
+const activeTab = ref('ongoing')
 const filterStatus = ref('')
 const searchKeyword = ref('')
 const detailDialogVisible = ref(false)
 const currentExam = ref({})
 
-const filteredExams = computed(() => {
-  return examList.value.filter(exam => {
+const getQuestionCount = (exam) => {
+  if (exam?.questionConfig) {
+    return exam.questionConfig.reduce((sum, item) => sum + (item.count || 0), 0)
+  }
+  return exam?.questionCount || 0
+}
+
+const getTotalScore = (exam) => {
+  if (exam?.questionConfig) {
+    return exam.questionConfig.reduce((sum, item) => sum + (item.count || 0) * (item.scorePerQuestion || 0), 0)
+  }
+  return exam?.totalScore || 0
+}
+
+// 进行中的考试
+const ongoingExams = computed(() => {
+  const userId = userStore.user?.id
+  const completedExamIds = mockRecords
+    .filter(r => r.userId === userId)
+    .map(r => r.examId)
+  return mockExams.filter(exam => {
+    if (exam.type === 'pc') return false
+    if (completedExamIds.includes(exam.id)) return false
+    if (exam.status === 'ended') return false
     if (filterStatus.value && exam.status !== filterStatus.value) return false
     if (searchKeyword.value && !exam.name.includes(searchKeyword.value)) return false
     return true
   })
+})
+
+// 已完成的考试
+const completedExams = computed(() => {
+  const userId = userStore.user?.id
+  return mockRecords
+    .filter(r => r.userId === userId)
+    .map(r => {
+      const exam = mockExams.find(e => e.id === r.examId)
+      return {
+        id: r.id,
+        examId: r.examId,
+        examName: exam ? exam.name : '未知考试',
+        score: r.score,
+        isPass: r.isPass,
+        correctCount: r.correctCount,
+        wrongCount: r.wrongCount,
+        totalQuestions: r.totalQuestions || (r.correctCount + r.wrongCount),
+        submitTime: r.submitTime
+      }
+    })
+    .filter(r => {
+      if (searchKeyword.value && !r.examName.includes(searchKeyword.value)) return false
+      return true
+    })
 })
 
 const viewExamDetail = (exam) => {
@@ -97,6 +182,10 @@ const startExam = (exam) => {
   }).then(() => {
     router.push(`/employee/exam/${exam.id}`)
   }).catch(() => {})
+}
+
+const viewResult = (record) => {
+  ElMessage.info('查看考试详情')
 }
 </script>
 

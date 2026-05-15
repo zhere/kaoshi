@@ -5,11 +5,13 @@
     <el-tabs v-model="activeTab">
       <el-tab-pane label="答题概览" name="overview">
         <div style="margin-bottom: 20px; display: flex; gap: 10px;">
-          <el-select v-model="selectedExamOverview" placeholder="选择考试" clearable style="width: 250px;">
+          <el-select v-model="overviewFilterCategory" placeholder="考试类目" clearable style="width: 150px;">
+            <el-option label="全部类目" value="" />
+            <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id" />
+          </el-select>
+          <el-select v-model="overviewFilterExam" placeholder="选择考试" clearable style="width: 250px;">
             <el-option label="全部考试" value="" />
-            <el-option label="安全生产知识考试" value="1" />
-            <el-option label="设备操作规程考试" value="2" />
-            <el-option label="应急处理能力测试" value="3" />
+            <el-option v-for="exam in filteredExamsByCategory(overviewFilterCategory)" :key="exam.id" :label="exam.name" :value="exam.id" />
           </el-select>
         </div>
         <el-row :gutter="20" style="margin-bottom: 20px;">
@@ -57,10 +59,12 @@
       
       <el-tab-pane label="成绩统计" name="scores">
         <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+          <el-select v-model="scoreFilterCategory" placeholder="考试类目" clearable style="width: 150px;">
+            <el-option label="全部类目" value="" />
+            <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id" />
+          </el-select>
           <el-select v-model="selectedExam" placeholder="选择考试" style="width: 250px;">
-            <el-option label="安全生产知识考试" value="1" />
-            <el-option label="设备操作规程考试" value="2" />
-            <el-option label="应急处理能力测试" value="3" />
+            <el-option v-for="exam in filteredExamsByCategory(scoreFilterCategory)" :key="exam.id" :label="exam.name" :value="exam.id" />
           </el-select>
         </div>
         
@@ -119,11 +123,13 @@
       
       <el-tab-pane label="错题分析" name="errors">
         <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+          <el-select v-model="errorFilterCategory" placeholder="考试类目" clearable style="width: 150px;">
+            <el-option label="全部类目" value="" />
+            <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id" />
+          </el-select>
           <el-select v-model="selectedExamErrors" placeholder="选择考试" clearable style="width: 250px;">
             <el-option label="全部考试" value="" />
-            <el-option label="安全生产知识考试" value="1" />
-            <el-option label="设备操作规程考试" value="2" />
-            <el-option label="应急处理能力测试" value="3" />
+            <el-option v-for="exam in filteredExamsByCategory(errorFilterCategory)" :key="exam.id" :label="exam.name" :value="exam.id" />
           </el-select>
         </div>
         <div class="chart-container">
@@ -148,12 +154,81 @@
         </div>
       </el-tab-pane>
       
+      <el-tab-pane label="部门统计" name="department">
+        <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+          <el-select v-model="deptStatDepartment" placeholder="选择部门" clearable style="width: 150px;">
+            <el-option label="全部部门" value="" />
+            <el-option v-for="d in departments" :key="d" :label="d" :value="d" />
+          </el-select>
+          <el-select v-model="deptStatCategory" placeholder="考试类目" clearable style="width: 150px;">
+            <el-option label="全部类目" value="" />
+            <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id" />
+          </el-select>
+          <el-select v-model="deptStatExam" placeholder="选择考试" clearable style="width: 250px;">
+            <el-option label="全部考试" value="" />
+            <el-option v-for="exam in filteredExamsByCategory(deptStatCategory)" :key="exam.id" :label="exam.name" :value="exam.id" />
+          </el-select>
+        </div>
+        <el-row :gutter="20" style="margin-bottom: 20px;">
+          <el-col :span="6">
+            <div class="stat-card">
+              <div class="stat-number">{{ deptStats.examCount }}</div>
+              <div class="stat-label">考试次数</div>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="stat-card">
+              <div class="stat-number">{{ deptStats.userCount }}</div>
+              <div class="stat-label">参与人数</div>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="stat-card">
+              <div class="stat-number">{{ deptStats.averageScore }}</div>
+              <div class="stat-label">平均分</div>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="stat-card">
+              <div class="stat-number">{{ deptStats.passRate }}%</div>
+              <div class="stat-label">通过率</div>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <div class="chart-container">
+              <div class="chart-title">部门成绩趋势</div>
+              <div ref="deptTrendChartRef" style="height: 300px;"></div>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="chart-container">
+              <div class="chart-title">部门答题统计</div>
+              <el-table :data="deptDetailList" border stripe max-height="300">
+                <el-table-column prop="department" label="部门" />
+                <el-table-column prop="examCount" label="考试次数" width="100" />
+                <el-table-column prop="userCount" label="参与人数" width="100" />
+                <el-table-column prop="averageScore" label="平均分" width="80" />
+                <el-table-column prop="passRate" label="通过率" width="80">
+                  <template #default="{ row }">
+                    <span style="color: #67C23A; font-weight: bold;">{{ row.passRate }}%</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-col>
+        </el-row>
+      </el-tab-pane>
+      
       <el-tab-pane label="个人详情" name="personal">
-        <div style="margin-bottom: 20px;">
-          <el-select v-model="selectedUser" placeholder="选择员工" style="width: 250px;">
-            <el-option label="王五 (运维部)" value="4" />
-            <el-option label="赵六 (检修部)" value="5" />
-            <el-option label="钱七 (运维部)" value="6" />
+        <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+          <el-select v-model="personalFilterDepartment" placeholder="选择部门" clearable style="width: 150px;">
+            <el-option label="全部部门" value="" />
+            <el-option v-for="d in departments" :key="d" :label="d" :value="d" />
+          </el-select>
+          <el-select v-model="selectedUser" placeholder="选择员工" style="width: 200px;">
+            <el-option v-for="u in filteredUsersByDepartment(personalFilterDepartment)" :key="u.id" :label="u.name + ' (' + u.department + ')'" :value="u.id" />
           </el-select>
         </div>
         
@@ -195,7 +270,7 @@
             <div class="chart-container">
               <div class="chart-title">答题记录</div>
               <el-table :data="userRecords" border stripe max-height="300">
-                <el-table-column prop="examName" label="考试名称" />
+                <el-table-column prop="examName" label="考试名称" show-overflow-tooltip />
                 <el-table-column prop="score" label="得分" width="80" />
                 <el-table-column prop="isPass" label="结果" width="80">
                   <template #default="{ row }">
@@ -215,22 +290,60 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import * as echarts from 'echarts'
-import { statistics as mockStats, examRecords as mockRecords, exams as mockExams } from '@/data/mockData'
+import { statistics as mockStats, examRecords as mockRecords, exams as mockExams, users as mockUsers, categories as mockCategories } from '@/data/mockData'
 
 const activeTab = ref('overview')
-const selectedExamOverview = ref('')
+
+// ===== 类目 + 考试筛选（答题概览） =====
+const overviewFilterCategory = ref('')
+const overviewFilterExam = ref('')
+
+// ===== 类目 + 考试筛选（成绩统计） =====
+const scoreFilterCategory = ref('')
+const selectedExam = ref('')
+
+// ===== 类目 + 考试筛选（错题分析） =====
+const errorFilterCategory = ref('')
 const selectedExamErrors = ref('')
-const selectedExam = ref('1')
-const selectedUser = ref('4')
+
+// ===== 部门统计（部门Tab） =====
+const deptStatDepartment = ref('')
+const deptStatCategory = ref('')
+const deptStatExam = ref('')
+
+// ===== 个人详情（个人详情右侧） =====
+const personalFilterDepartment = ref('')
+const selectedUser = ref('')
+
 const departmentChartRef = ref(null)
 const monthlyChartRef = ref(null)
 const scoreDistributionRef = ref(null)
 const personalTrendRef = ref(null)
+const deptTrendChartRef = ref(null)
+
 const stats = ref({ ...mockStats })
 const wrongQuestions = ref(mockStats.wrongQuestionStats)
 const userRecords = ref([])
+
+const categories = computed(() => mockCategories)
+
+const departments = computed(() => {
+  const deptSet = new Set(mockUsers.filter(u => u.role === 'employee').map(u => u.department))
+  return [...deptSet]
+})
+
+const filteredExamsByCategory = (categoryId) => {
+  if (!categoryId) return mockExams
+  return mockExams.filter(e => e.category === categoryId)
+}
+
+const filteredUsersByDepartment = (department) => {
+  const employees = mockUsers.filter(u => u.role === 'employee')
+  if (!department) return employees
+  return employees.filter(u => u.department === department)
+}
 
 const examScoreStats = ref({
   participants: 45,
@@ -253,6 +366,20 @@ const personalStats = ref({
   passRate: 83,
   studyHours: 45
 })
+
+const deptStats = ref({
+  examCount: 8,
+  userCount: 15,
+  averageScore: 78,
+  passRate: 85
+})
+
+const deptDetailList = ref([
+  { department: '运维部', examCount: 3, userCount: 15, averageScore: 78, passRate: 85 },
+  { department: '检修部', examCount: 2, userCount: 10, averageScore: 72, passRate: 75 },
+  { department: '安全部', examCount: 2, userCount: 8, averageScore: 82, passRate: 90 },
+  { department: '培训部', examCount: 1, userCount: 5, averageScore: 75, passRate: 80 }
+])
 
 const initDepartmentChart = () => {
   const chart = echarts.init(departmentChartRef.value)
@@ -412,6 +539,37 @@ const initPersonalTrendChart = () => {
   window.addEventListener('resize', () => chart.resize())
 }
 
+const initDeptTrendChart = () => {
+  if (!deptTrendChartRef.value) return
+  const chart = echarts.init(deptTrendChartRef.value)
+  const option = {
+    tooltip: {
+      trigger: 'axis'
+    },
+    xAxis: {
+      type: 'category',
+      data: ['1月', '2月', '3月', '4月', '5月', '6月']
+    },
+    yAxis: {
+      type: 'value',
+      max: 100
+    },
+    series: [
+      {
+        data: [72, 75, 78, 76, 80, 82],
+        type: 'line',
+        smooth: true,
+        itemStyle: { color: '#67C23A' },
+        areaStyle: {
+          color: 'rgba(103, 194, 58, 0.2)'
+        }
+      }
+    ]
+  }
+  chart.setOption(option)
+  window.addEventListener('resize', () => chart.resize())
+}
+
 const loadUserRecords = () => {
   const records = mockRecords.filter(r => r.userId === parseInt(selectedUser.value))
   userRecords.value = records.map(r => {
@@ -439,8 +597,8 @@ watch(selectedExam, () => {
   }
 })
 
-watch(selectedExamOverview, () => {
-  if (selectedExamOverview.value) {
+watch(overviewFilterExam, () => {
+  if (overviewFilterExam.value) {
     stats.value = {
       totalExams: 1,
       totalRecords: 45,
@@ -468,6 +626,8 @@ watch(activeTab, (newVal) => {
     setTimeout(() => initScoreDistributionChart(), 100)
   } else if (newVal === 'personal') {
     setTimeout(() => initPersonalTrendChart(), 100)
+  } else if (newVal === 'department') {
+    setTimeout(() => initDeptTrendChart(), 100)
   }
 })
 
@@ -477,3 +637,52 @@ onMounted(() => {
   loadUserRecords()
 })
 </script>
+
+<style scoped>
+.page-card {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: bold;
+  color: #409EFF;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #909399;
+  margin-top: 5px;
+}
+
+.chart-container {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.chart-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 10px;
+}
+</style>
