@@ -77,6 +77,11 @@ const routes = [
         component: () => import('@/views/employee/ExamList.vue')
       },
       {
+        path: 'practice',
+        name: 'PracticeExam',
+        component: () => import('@/views/employee/PracticeExam.vue')
+      },
+      {
         path: 'exam/:id',
         name: 'OnlineExam',
         component: () => import('@/views/employee/OnlineExam.vue')

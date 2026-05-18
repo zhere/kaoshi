@@ -2553,6 +2553,41 @@ export const examRecords = [
   }
 ]
 
+export const practiceRecords = [
+  {
+    id: 1,
+    userId: 4,
+    category: 1,
+    questions: [
+      { id: 1, type: 'single', category: 1, content: '在电气设备上工作，保证安全的组织措施有（）', options: ['工作票制度', '工作许可制度', '工作监护制度', '以上都是'], answer: 'D', analysis: '在电气设备上工作，保证安全的组织措施包括工作票制度、工作许可制度、工作监护制度等。' },
+      { id: 2, type: 'single', category: 1, content: '高压设备发生接地时，室内不得接近故障点（）以内', options: ['4米', '6米', '8米', '10米'], answer: 'A', analysis: '高压设备发生接地时，室内不得接近故障点4米以内，室外不得接近故障点8米以内。' },
+      { id: 3, type: 'single', category: 1, content: '工作票应由（）签发', options: ['工作负责人', '工作许可人', '工作票签发人', '值班负责人'], answer: 'C', analysis: '工作票应由工作票签发人签发，工作票签发人应熟悉人员技术水平、设备情况和工作规程。' }
+    ],
+    userAnswers: { 1: 'D', 2: 'B', 3: 'C' },
+    correctCount: 2,
+    wrongCount: 1,
+    duration: 8,
+    createTime: '2024-03-10 14:30:00',
+    type: 'practice'
+  },
+  {
+    id: 2,
+    userId: 4,
+    category: 2,
+    questions: [
+      { id: 6, type: 'single', category: 2, content: '在带电的电压互感器二次回路上工作时，必须有专人监护，严禁（）', options: ['将回路的保护接地点断开', '使用绝缘工具', '戴绝缘手套', '站在绝缘垫上'], answer: 'A', analysis: '在带电的电压互感器二次回路上工作时，严禁将回路的保护接地点断开，以防止触电事故。' },
+      { id: 7, type: 'single', category: 2, content: '电流互感器的二次绕组严禁（）', options: ['开路', '短路', '接地', '接负载'], answer: 'A', analysis: '电流互感器的二次绕组严禁开路，否则会产生高电压，危及人身安全。' },
+      { id: 8, type: 'single', category: 2, content: '在高压设备上工作，需要全部停电或部分停电者，应填写（）', options: ['第一种工作票', '第二种工作票', '带电作业工作票', '事故应急抢修单'], answer: 'A', analysis: '在高压设备上工作，需要全部停电或部分停电者，应填写第一种工作票。' }
+    ],
+    userAnswers: { 6: 'A', 7: 'A', 8: 'B' },
+    correctCount: 2,
+    wrongCount: 1,
+    duration: 10,
+    createTime: '2024-03-12 10:15:00',
+    type: 'practice'
+  }
+]
+
 export const statistics = {
   totalExams: 4,
   totalQuestions: 30,

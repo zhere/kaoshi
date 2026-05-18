@@ -48,13 +48,16 @@
       <div class="page-title">历史错题本</div>
       <el-tabs v-model="wrongTab">
         <el-tab-pane label="全部错题" name="all"></el-tab-pane>
-        <el-tab-pane label="按考试分类" name="byExam"></el-tab-pane>
+        <el-tab-pane label="按来源分类" name="bySource"></el-tab-pane>
       </el-tabs>
       <div v-if="wrongTab === 'all'">
         <div v-for="(question, index) in allWrongQuestions" :key="question.id" class="question-item" style="margin-bottom: 20px;">
           <div class="question-title">
             <span style="color: #409EFF; font-weight: bold;">第 {{ index + 1 }} 题</span>
             <el-tag size="small" style="margin-left: 10px;">{{ question.type === 'single' ? '单选题' : question.type === 'multiple' ? '多选题' : '判断题' }}</el-tag>
+            <el-tag size="small" :type="question.source === 'practice' ? 'info' : 'warning'" style="margin-left: 5px;">
+              {{ question.source === 'practice' ? '练习' : '考试' }}
+            </el-tag>
             <span style="margin-left: 10px;">{{ question.content }}</span>
           </div>
           <div class="question-options">
@@ -77,8 +80,8 @@
       </div>
       <div v-else>
         <el-collapse v-model="activeCollapse">
-          <el-collapse-item v-for="exam in wrongQuestionsByExam" :key="exam.examId" :title="exam.examName" :name="exam.examId">
-            <div v-for="(question, index) in exam.questions" :key="question.id" class="question-item" style="margin-bottom: 15px;">
+          <el-collapse-item v-for="item in wrongQuestionsBySource" :key="item.key" :title="item.title" :name="item.key">
+            <div v-for="(question, index) in item.questions" :key="question.id" class="question-item" style="margin-bottom: 15px;">
               <div class="question-title">
                 <span style="color: #409EFF; font-weight: bold;">第 {{ index + 1 }} 题</span>
                 <span style="margin-left: 10px;">{{ question.content }}</span>
@@ -120,7 +123,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { examRecords as mockRecords, exams as mockExams, questions as mockQuestions } from '@/data/mockData'
+import { examRecords as mockRecords, exams as mockExams, questions as mockQuestions, practiceRecords as mockPracticeRecords } from '@/data/mockData'
 
 const userStore = useUserStore()
 const dateRange = ref([])
@@ -144,6 +147,13 @@ const historyRecords = computed(() => {
   })
 })
 
+const practiceRecords = computed(() => {
+  const userId = userStore.user?.id
+  const storedRecords = window.practiceRecords || []
+  const mockPractice = mockPracticeRecords.filter(r => r.userId === userId)
+  return [...mockPractice, ...storedRecords]
+})
+
 const filteredRecords = computed(() => {
   let records = historyRecords.value
   if (filterResult.value) {
@@ -162,6 +172,7 @@ const filteredRecords = computed(() => {
 
 const allWrongQuestions = computed(() => {
   const wrongQs = []
+
   historyRecords.value.forEach(record => {
     if (!record.isPass) {
       const exam = mockExams.find(e => e.id === record.examId)
@@ -173,44 +184,69 @@ const allWrongQuestions = computed(() => {
             const correctAnswer = question.answer
             const userAnswerStr = Array.isArray(userAnswer) ? userAnswer.sort().join('') : userAnswer
             if (userAnswerStr !== correctAnswer && !wrongQs.find(q => q.id === qId)) {
-              wrongQs.push(question)
+              wrongQs.push({ ...question, source: 'exam' })
             }
           }
         })
       }
     }
   })
+
+  practiceRecords.value.forEach(record => {
+    record.questions.forEach(question => {
+      const userAnswer = record.userAnswers[question.id]
+      const correctAnswer = question.answer
+      const userAnswerStr = Array.isArray(userAnswer) ? userAnswer.sort().join('') : userAnswer
+      if (userAnswer && userAnswerStr !== correctAnswer && !wrongQs.find(q => q.id === question.id)) {
+        wrongQs.push({ ...question, source: 'practice' })
+      }
+    })
+  })
+
   return wrongQs
 })
 
-const wrongQuestionsByExam = computed(() => {
-  const result = []
+const wrongQuestionsBySource = computed(() => {
+  const examWrongQs = []
+  const practiceWrongQs = []
+
   historyRecords.value.forEach(record => {
     if (!record.isPass) {
       const exam = mockExams.find(e => e.id === record.examId)
       if (exam) {
-        const wrongQs = []
         exam.questions.forEach(qId => {
           const question = mockQuestions.find(q => q.id === qId)
           if (question) {
             const userAnswer = record.answers[qId]
             const correctAnswer = question.answer
             const userAnswerStr = Array.isArray(userAnswer) ? userAnswer.sort().join('') : userAnswer
-            if (userAnswerStr !== correctAnswer) {
-              wrongQs.push(question)
+            if (userAnswerStr !== correctAnswer && !examWrongQs.find(q => q.id === qId)) {
+              examWrongQs.push(question)
             }
           }
         })
-        if (wrongQs.length > 0) {
-          result.push({
-            examId: exam.id,
-            examName: exam.name,
-            questions: wrongQs
-          })
-        }
       }
     }
   })
+
+  practiceRecords.value.forEach(record => {
+    record.questions.forEach(question => {
+      const userAnswer = record.userAnswers[question.id]
+      const correctAnswer = question.answer
+      const userAnswerStr = Array.isArray(userAnswer) ? userAnswer.sort().join('') : userAnswer
+      if (userAnswer && userAnswerStr !== correctAnswer && !practiceWrongQs.find(q => q.id === question.id)) {
+        practiceWrongQs.push(question)
+      }
+    })
+  })
+
+  const result = []
+  if (examWrongQs.length > 0) {
+    result.push({ key: 'exam', title: `考试错题 (${examWrongQs.length})`, questions: examWrongQs })
+  }
+  if (practiceWrongQs.length > 0) {
+    result.push({ key: 'practice', title: `练习错题 (${practiceWrongQs.length})`, questions: practiceWrongQs })
+  }
   return result
 })
 

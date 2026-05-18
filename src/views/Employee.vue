@@ -10,6 +10,9 @@
         <el-button type="primary" link @click="router.push('/employee/exam-list')">
           <el-icon><EditPen /></el-icon><span class="btn-text">考试列表</span>
         </el-button>
+        <el-button type="info" link @click="router.push('/employee/practice')">
+          <el-icon><BookOpen /></el-icon><span class="btn-text">在线练习</span>
+        </el-button>
         <el-button type="success" link @click="router.push('/employee/material')">
           <el-icon><Reading /></el-icon><span class="btn-text">学习资料</span>
         </el-button>
@@ -33,6 +36,10 @@
       <div class="mobile-nav-item" :class="{ active: route.path === '/employee/exam-list' }" @click="router.push('/employee/exam-list')">
         <el-icon><EditPen /></el-icon>
         <span>考试</span>
+      </div>
+      <div class="mobile-nav-item" :class="{ active: route.path === '/employee/practice' }" @click="router.push('/employee/practice')">
+        <el-icon><BookOpen /></el-icon>
+        <span>练习</span>
       </div>
       <div class="mobile-nav-item" :class="{ active: route.path === '/employee/material' }" @click="router.push('/employee/material')">
         <el-icon><Reading /></el-icon>
